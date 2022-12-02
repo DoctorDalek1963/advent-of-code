@@ -1,0 +1,10 @@
+[package]
+name = "day-2"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+path = "src/bin/part1.rs"
+name = "part1"
+
+[dependencies]
