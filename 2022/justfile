@@ -1,0 +1,9 @@
+check-and-test-all:
+	for dir in $(fd -t d day); do just _check-and-test $dir; done
+
+_check-and-test dir:
+	#!/usr/bin/env bash
+	cd {{dir}}
+	cargo check
+	cargo test
+	cargo test --release
