@@ -7,3 +7,8 @@ _check-and-test dir:
 	cargo check
 	cargo test
 	cargo test --release
+
+copy-scaffolding number:
+	mkdir -p day-{{number}}
+	cp -r ./scaffolding/rust/* day-{{number}}
+	fd -e rs -e toml . day-{{number}}/ -X sd -s "DAYNUM" "{{number}}"
