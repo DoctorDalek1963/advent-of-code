@@ -8,7 +8,6 @@ repos:
       - id: check-vcs-permalinks
       - id: check-yaml
       - id: end-of-file-fixer
-      - id: trailing-whitespace
 
   - repo: local
     hooks:
