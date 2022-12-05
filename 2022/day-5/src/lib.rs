@@ -1,3 +1,4 @@
+pub mod bin;
 pub mod parse;
 
 use std::fs;
