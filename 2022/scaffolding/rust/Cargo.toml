@@ -4,11 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "part1"
-path = "src/_bin/part1.rs"
-
-[[bin]]
-name = "part2"
-path = "src/_bin/part2.rs"
+name = "day-DAYNUM"
+path = "src/_bin/main.rs"
 
 [dependencies]
