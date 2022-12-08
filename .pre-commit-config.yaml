@@ -11,10 +11,10 @@ repos:
 
   - repo: local
     hooks:
-      - id: just-check-and-test-all-2022
-        name: just check-and-test-all (2022)
+      - id: just-check-and-test-all
+        name: just check-and-test-all
         entry: bash -ic "cd 2022 && just check-and-test-all"
         language: system
         types: [rust]
-        files: ^2022/.*$
+        files: ^20.*/.*$
         pass_filenames: false
