@@ -8,3 +8,4 @@ name = "day-DAYNUM"
 path = "src/_bin/main.rs"
 
 [dependencies]
+nom = "7.1.1"

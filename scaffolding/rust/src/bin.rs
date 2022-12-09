@@ -1,5 +1,9 @@
 use crate::*;
 
+pub fn get_input() -> String {
+    std::fs::read_to_string("./input.txt").unwrap()
+}
+
 pub fn process_part1(s: &str) -> u32 {
     0
 }
@@ -17,11 +21,13 @@ mod tests {
     #[test]
     fn process_part1_test() {
         assert_eq!(process_part1(INPUT), 1);
+        //assert_eq!(process_part1(&get_input()), 1);
     }
 
     #[test]
     #[ignore]
     fn process_part2_test() {
         assert_eq!(process_part2(INPUT), 1);
+        //assert_eq!(process_part2(&get_input()), 1);
     }
 }
