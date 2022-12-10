@@ -35,3 +35,7 @@ setup day year:
 # setup the scaffolding and input file for today
 today:
 	just setup "$(date +'%d' | sed 's/^0//')" "$(date +'%Y')"
+
+# make the current day use the nightly channel
+nightly:
+	echo "[toolchain]\nchannel = \"nightly\"" > {{invocation_directory()}}/rust-toolchain.toml
