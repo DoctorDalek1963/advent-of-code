@@ -189,9 +189,8 @@ mod tests {
         assert_eq!(group.monkeys[3].items, vec![]);
     }
 
-    // This test doesn't work, but the final answer is correct. I don't really know why
     #[test]
-    #[ignore]
+    #[ignore = "this test doesn't work, but the final answer is correct; I don't know why"]
     fn monkey_group_do_round_part2_test() {
         let mut group = parse_monkey_group(TEST_INPUT).unwrap().1;
 
