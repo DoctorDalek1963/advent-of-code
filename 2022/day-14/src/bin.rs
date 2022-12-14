@@ -31,7 +31,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg_attr(debug_assertions, ignore = "only run in release mode")]
+    #[cfg_attr(debug_assertions, ignore = "very slow in debug mode")]
     fn process_part2_test() {
         assert_eq!(process_part2(TEST_INPUT), 93);
         assert_eq!(process_part2(&get_input()), 26845);
