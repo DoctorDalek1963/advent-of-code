@@ -12,6 +12,7 @@ pub type Point = (u32, u32);
 pub struct RockMap {
     rock_points: HashSet<Point>,
     sand_points: HashSet<Point>,
+    max_rock_y: u32,
 }
 
 enum NextPointError {
@@ -71,7 +72,7 @@ impl Debug for RockMap {
             .chain(self.sand_points.iter().map(|(x, _)| x));
         let x_range = (points_iter.clone().min().unwrap() - 2)..=(points_iter.max().unwrap() + 2);
 
-        for y in 0..self.max_rock_y() + 1 {
+        for y in 0..self.max_rock_y + 1 {
             write!(f, "  ")?;
 
             for x in x_range.clone() {
@@ -113,9 +114,12 @@ impl RockMap {
             }
         }
 
+        let max_rock_y = *rock_points.clone().iter().map(|(_, y)| y).max().unwrap();
+
         Self {
             rock_points,
             sand_points: HashSet::new(),
+            max_rock_y,
         }
     }
 
@@ -123,18 +127,14 @@ impl RockMap {
         self.rock_points.contains(point) || self.sand_points.contains(point)
     }
 
-    fn max_rock_y(&self) -> &u32 {
-        self.rock_points.iter().map(|(_, y)| y).max().unwrap()
-    }
-
     fn is_in_abyss(&self, (_, y): &Point) -> bool {
-        y > self.max_rock_y()
+        *y > self.max_rock_y
     }
 
     fn get_next_point(&self, point: &Point, with_abyss: bool) -> Result<Point, NextPointError> {
         let (x, y) = *point;
 
-        if !with_abyss && y == *self.max_rock_y() + 1 {
+        if !with_abyss && y == self.max_rock_y + 1 {
             return Err(NextPointError::Blocked);
         }
 
@@ -219,6 +219,7 @@ mod tests {
                 (498, 9), (497, 9), (496, 9), (495, 9), (494, 9),
             ]),
             sand_points: HashSet::new(),
+            max_rock_y: 9,
         };
 
         assert_eq!(RockMap::from_lines(parse_lines(TEST_INPUT).unwrap().1), map);
