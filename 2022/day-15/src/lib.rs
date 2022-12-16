@@ -113,9 +113,11 @@ pub fn get_tuning_frequency_of_beacon_pos(sb_pairs: Vec<SensorBeaconPair>, max: 
     let search_space: Mutex<BTreeSet<Point>> = Mutex::new(BTreeSet::new());
     sb_pairs.par_iter().for_each(|&sbp| {
         let mut points = sbp.get_points_just_outside_range();
-        let drain = points.drain_filter(|&(x, y)| x >= 0 && x <= max && y >= 0 && y <= max);
+        let points_inside: Vec<Point> = points
+            .drain_filter(|&(x, y)| x >= 0 && x <= max && y >= 0 && y <= max)
+            .collect();
 
-        search_space.lock().unwrap().extend(drain);
+        search_space.lock().unwrap().extend(points_inside);
     });
 
     for p in search_space.lock().unwrap().iter() {
