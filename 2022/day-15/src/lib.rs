@@ -1,7 +1,10 @@
+#![feature(btree_drain_filter)]
+
 pub mod bin;
 
 use nom::{bytes::complete::tag, character::complete, multi::separated_list1, IResult};
-use std::{collections::HashSet, sync::Mutex};
+use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
+use std::{collections::BTreeSet, sync::Mutex};
 
 pub type Point = (i32, i32);
 
@@ -48,9 +51,9 @@ impl SensorBeaconPair {
         manhattan_distance(self.sensor, point) <= self.get_dist()
     }
 
-    fn get_points_just_outside_range(&self) -> HashSet<Point> {
+    fn get_points_just_outside_range(&self) -> BTreeSet<Point> {
         let dist = self.get_dist() as i32;
-        let mut set = HashSet::with_capacity(4 * dist as usize);
+        let mut set = BTreeSet::new();
         let (sx, sy) = self.sensor;
 
         let mut x: i32;
@@ -107,14 +110,13 @@ pub fn count_occupied_cells_at_y_level(sb_pairs: Vec<SensorBeaconPair>, y_level:
 }
 
 pub fn get_tuning_frequency_of_beacon_pos(sb_pairs: Vec<SensorBeaconPair>, max: i32) -> u64 {
-    let search_space: Mutex<HashSet<Point>> = Mutex::new(HashSet::new());
-    for sbp in &sb_pairs {
-        for (x, y) in sbp.get_points_just_outside_range() {
-            if x >= 0 && x <= max && y >= 0 && y <= max {
-                search_space.lock().unwrap().insert((x, y));
-            }
-        }
-    }
+    let search_space: Mutex<BTreeSet<Point>> = Mutex::new(BTreeSet::new());
+    sb_pairs.par_iter().for_each(|&sbp| {
+        let mut points = sbp.get_points_just_outside_range();
+        let drain = points.drain_filter(|&(x, y)| x >= 0 && x <= max && y >= 0 && y <= max);
+
+        search_space.lock().unwrap().extend(drain);
+    });
 
     for p in search_space.lock().unwrap().iter() {
         if !sb_pairs.iter().any(|s| s.contains(*p)) {
@@ -221,7 +223,7 @@ mod tests {
             sensor: (0, 0),
             beacon: (3, 0),
         };
-        let set = HashSet::from([
+        let set = BTreeSet::from([
             (0, 4),
             (1, 3),
             (2, 2),
