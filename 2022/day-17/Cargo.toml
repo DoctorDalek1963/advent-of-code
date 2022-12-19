@@ -1,0 +1,9 @@
+[package]
+name = "day-17"
+version = "0.1.0"
+rust-version = "1.66"
+edition = "2021"
+
+[[bin]]
+name = "day-17"
+path = "src/_bin/main.rs"
