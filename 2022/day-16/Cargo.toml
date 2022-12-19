@@ -1,0 +1,12 @@
+[package]
+name = "day-16"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "day-16"
+path = "src/_bin/main.rs"
+
+[dependencies]
+nom = "7.1.1"
+pathfinding = "4.1.1"
