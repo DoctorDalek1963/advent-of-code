@@ -1,0 +1,12 @@
+[package]
+name = "day-20"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "day-20"
+path = "src/_bin/main.rs"
+
+[dependencies]
+tracing = "0.1.37"
+tracing-subscriber = "0.3.16"
