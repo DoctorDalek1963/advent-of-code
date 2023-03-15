@@ -1,2 +1,8 @@
 [workspace]
 members = ["day-*"]
+
+[workspace.dependencies]
+itertools = "0.10.5"
+nom = "7.1.1"
+tracing = "0.1.37"
+tracing-subscriber = "0.3.16"

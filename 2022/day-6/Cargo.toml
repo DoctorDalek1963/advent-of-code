@@ -8,4 +8,4 @@ name = "day-6"
 path = "src/_bin/main.rs"
 
 [dependencies]
-itertools = "0.10.5"
+itertools.workspace = true

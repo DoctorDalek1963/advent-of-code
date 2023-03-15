@@ -8,5 +8,5 @@ name = "day-20"
 path = "src/_bin/main.rs"
 
 [dependencies]
-tracing = "0.1.37"
-tracing-subscriber = "0.3.16"
+tracing.workspace = true
+tracing-subscriber.workspace = true
