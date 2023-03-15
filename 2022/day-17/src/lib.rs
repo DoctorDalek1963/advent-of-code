@@ -1,8 +1,6 @@
 pub mod bin;
 
-use std::{
-    cmp::Ordering, collections::BTreeSet, iter::Cycle, ops::Add, slice::Iter, vec::IntoIter,
-};
+use std::{cmp::Ordering, collections::BTreeSet, iter::Cycle, ops::Add, vec::IntoIter};
 
 /// All points are (x, y) with the origin being in the bottom left.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
