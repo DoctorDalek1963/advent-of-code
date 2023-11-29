@@ -13,8 +13,15 @@ repos:
     hooks:
       - id: just-check-and-test-all
         name: just check-and-test-all
-        entry: bash -ic "cd 2022 && just check-and-test-all"
+        entry: bash -ic "just check-and-test-all"
         language: system
         types: [rust]
-        files: ^20.*/.*$
+        files: ^20\d\d/.*$
+        pass_filenames: false
+      - id: rustfmt
+        name: rustfmt
+        entry: bash -ic "fd -e rs -x rustfmt"
+        language: system
+        types: [rust]
+        files: ^20\d\d/.*$
         pass_filenames: false
