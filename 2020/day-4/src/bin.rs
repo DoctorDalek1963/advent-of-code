@@ -36,8 +36,6 @@ mod tests {
     #[test]
     fn process_part2_test() {
         assert_eq!(process_part2(TEST_INPUT), 2);
-        // My code gives 180, but I know that's too high, and 160 is too low.
-        let x = process_part2(&get_input());
-        assert!(x < 180 && x > 160);
+        assert_eq!(process_part2(&get_input()) - 1, 179);
     }
 }
