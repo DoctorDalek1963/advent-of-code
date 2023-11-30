@@ -7,11 +7,11 @@ pub fn get_input() -> String {
     std::fs::read_to_string("./input.txt").unwrap()
 }
 
-pub fn process_part1(input: &str) -> u32 {
+pub fn process_part1(input: &str) -> usize {
     0
 }
 
-pub fn process_part2(input: &str) -> u32 {
+pub fn process_part2(input: &str) -> usize {
     0
 }
 
@@ -19,6 +19,7 @@ pub fn process_part2(input: &str) -> u32 {
 mod tests {
     use super::*;
     use crate::TEST_INPUT;
+    use pretty_assertions::assert_eq;
 
     #[test]
     #[ignore]
