@@ -1,0 +1,15 @@
+[package]
+name = "day-1"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "day-1"
+path = "src/_bin/main.rs"
+
+[dependencies]
+lazy_static.workspace = true
+regex.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true
