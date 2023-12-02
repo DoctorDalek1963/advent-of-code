@@ -11,16 +11,16 @@ repos:
 
   - repo: local
     hooks:
-      - id: just-check-and-test-all
-        name: just check-and-test-all
-        entry: bash -ic "just check-and-test-all"
+      - id: just-check-and-test
+        name: just check-and-test
+        entry: bash -ic "just check-and-test"
         language: system
         types: [rust]
         files: ^20\d\d/.*$
-        pass_filenames: false
-      - id: rustfmt
-        name: rustfmt
-        entry: bash -ic "fd -e rs -x rustfmt"
+        pass_filenames: true
+      - id: fmt
+        name: fmt
+        entry: bash -ic "just fmt"
         language: system
         types: [rust]
         files: ^20\d\d/.*$

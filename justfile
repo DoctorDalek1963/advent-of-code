@@ -1,11 +1,31 @@
 set dotenv-load
 
+# format all the Rust files
+fmt:
+	fd -e rs -x rustfmt
+
+# check and test only the days whose files are passed in, used for pre-commit
+check-and-test *args:
+	#!/usr/bin/env python3
+	import re
+	import subprocess
+
+	input = "{{args}}".split()
+	days = set()
+	for file in input:
+		day = re.match(r"20\d\d/day-\d+/", file)
+		if day is not None:
+			days.add(day.group(0))
+
+	for day in days:
+		subprocess.run(["just", "_check-and-test-day", day])
+
 # cargo check and test every day
 check-and-test-all:
-	for dir in $(fd -t d 20 -X fd -t d day); do just _check-and-test $dir; done
+	for dir in $(fd -t d 20 -X fd -t d day); do just _check-and-test-day $dir; done
 
-# cargo check and test the given directory
-_check-and-test dir:
+# cargo check and test the given day
+_check-and-test-day dir:
 	#!/usr/bin/env bash
 	cd {{dir}}
 	cargo check
