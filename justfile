@@ -13,7 +13,7 @@ check-and-test *args:
 	input = "{{args}}".split()
 	days = set()
 	for file in input:
-		day = re.match(r"20\d\d/day-\d+/", file)
+		day = re.search(r"20\d\d/day-\d+/", file)
 		if day is not None:
 			days.add(day.group(0))
 
