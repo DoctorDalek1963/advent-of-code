@@ -13,14 +13,14 @@ repos:
     hooks:
       - id: just-check-and-test
         name: just check-and-test
-        entry: bash -ic "just check-and-test"
+        entry: just check-and-test
         language: system
         types: [rust]
         files: ^20\d\d/.*$
         pass_filenames: true
       - id: fmt
         name: fmt
-        entry: bash -ic "just fmt"
+        entry: just fmt
         language: system
         types: [rust]
         files: ^20\d\d/.*$
