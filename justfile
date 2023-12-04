@@ -18,7 +18,9 @@ check-and-test *args:
 			days.add(day.group(0))
 
 	for day in days:
-		subprocess.run(["just", "_check-and-test-day", day])
+		exit_code = subprocess.run(["just", "_check-and-test-day", day]).returncode
+		if exit_code != 0:
+			exit(exit_code)
 
 # cargo check and test every day
 check-and-test-all:
@@ -28,6 +30,7 @@ check-and-test-all:
 _check-and-test-day dir:
 	#!/usr/bin/env bash
 	cd {{dir}}
+	export RUSTFLAGS="-Dwarnings"
 	cargo check
 	cargo test
 	cargo test --release
