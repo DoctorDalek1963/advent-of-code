@@ -18,10 +18,10 @@ repos:
         types: [rust]
         files: ^20\d\d/.*$
         pass_filenames: true
-      - id: fmt
-        name: fmt
-        entry: just fmt
+      - id: rustfmt
+        name: rustfmt
+        entry: rustfmt
         language: system
         types: [rust]
         files: ^20\d\d/.*$
-        pass_filenames: false
+        pass_filenames: true
