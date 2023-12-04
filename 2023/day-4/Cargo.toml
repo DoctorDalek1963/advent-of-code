@@ -1,0 +1,14 @@
+[package]
+name = "day-4"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "day-4"
+path = "src/_bin/main.rs"
+
+[dependencies]
+nom.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true
