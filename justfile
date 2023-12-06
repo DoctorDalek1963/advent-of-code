@@ -4,6 +4,14 @@ set dotenv-load
 fmt:
 	fd -e rs -x rustfmt
 
+# run this day with dhat-heap to profile memory usage
+dhat-heap:
+	cd {{invocation_directory()}} && cargo run --release --features dhat-heap
+
+# open the dhat viewer to view dhat-heap.json files properly
+open-dhat-viewer:
+	xdg-open dhat/dh_view.html
+
 # check and test only the days whose files are passed in, used for pre-commit
 check-and-test *args:
 	#!/usr/bin/env python3
