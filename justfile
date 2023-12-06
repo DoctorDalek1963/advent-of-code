@@ -1,5 +1,8 @@
 set dotenv-load
 
+_default:
+	@just --list
+
 # format all the Rust files
 fmt:
 	fd -e rs -x rustfmt
