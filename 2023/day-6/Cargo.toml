@@ -1,0 +1,18 @@
+[package]
+name = "day-6"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "day-6"
+path = "src/_bin/main.rs"
+
+[dependencies]
+dhat = { workspace = true, optional = true }
+nom.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true
+
+[features]
+dhat-heap = ["dep:dhat"]
