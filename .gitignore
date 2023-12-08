@@ -1,3 +1,4 @@
 target/
 .env
 dhat-heap.json
+input.txt

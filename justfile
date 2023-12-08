@@ -56,10 +56,27 @@ _copy-scaffolding day year:
 # get the input file for the given day
 _get-input day year:
 	#!/usr/bin/env python
-
 	from aocd import get_data
+
 	with open('{{justfile_directory()}}/{{year}}/day-{{day}}/input.txt', 'w') as f:
 		f.write(get_data(day={{day}}, year={{year}}) + '\n')
+
+# get the input files for every day
+get-all-inputs:
+	#!/usr/bin/env python
+	import asyncio
+	import re
+	import subprocess
+
+	async def main():
+		days = subprocess.run(["fd", "-t", "d", "day-"], capture_output=True).stdout.split()
+		processed_days = [re.match(r"(20\d\d)/day-(\d+)/", d.decode("utf-8")).groups(1) for d in days]
+
+		await asyncio.gather(
+			*[asyncio.create_subprocess_shell(f"just _get-input {day} {year}") for (year, day) in processed_days]
+		)
+
+	asyncio.run(main())
 
 # setup the scaffolding and input file for the given day
 setup day year:
