@@ -1,0 +1,19 @@
+[package]
+name = "day-13"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "day-13"
+path = "src/_bin/main.rs"
+
+[dependencies]
+bitvec = "1.0.1"
+dhat = { workspace = true, optional = true }
+rayon.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true
+
+[features]
+dhat-heap = ["dep:dhat"]
