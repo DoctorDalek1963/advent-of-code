@@ -1,5 +1,8 @@
-target/
 .env
-dhat-heap.json
-input.txt
 .direnv/
+/.pre-commit-config.yaml
+
+input.txt
+
+target/
+dhat-heap.json

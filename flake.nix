@@ -48,8 +48,16 @@
           end-of-file-fixer.enable = true;
           trim-trailing-whitespace.enable = true;
 
+          just-check-changed = {
+            enable = true;
+            name = "just-check-changed";
+            description = "Check the things that have changed";
+            files = "\\.(rs|toml|lock)$";
+            entry = "${pkgs.just}/bin/just check-changed";
+            stages = ["pre-push"];
+          };
+
           alejandra.enable = true;
-          rustfmt.enable = true;
         };
       };
     };

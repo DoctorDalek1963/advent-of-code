@@ -15,35 +15,35 @@ dhat-heap:
 open-dhat-viewer:
 	xdg-open dhat/dh_view.html
 
-# check and test only the days whose files are passed in, used for pre-commit
-check-and-test *args:
-	#!/usr/bin/env python3
+# check and test only the years whose files are passed in, used for pre-commit
+check-changed *args:
+	#!/usr/bin/env python
 	import re
 	import subprocess
 
 	input = "{{args}}".split()
-	days = set()
+	paths = set()
 	for file in input:
-		day = re.search(r"20\d\d/day-\d+/", file)
-		if day is not None:
-			days.add(day.group(0))
+		path = re.search(r"20\d\d/[^/]+/", file)
+		if path is not None:
+			paths.add(path.group(0))
 
-	for day in days:
-		exit_code = subprocess.run(["just", "_check-and-test-day", day]).returncode
+	for path in paths:
+		exit_code = subprocess.run(["nix", "flake", "check", f"path:{path}", "--print-build-logs", "--keep-going"]).returncode
 		if exit_code != 0:
 			exit(exit_code)
 
-# cargo check and test every day
+# check every flake
 check-all:
 	fd --full-path -t d '20\d\d/[^/]+$' -x nix flake check path:{} --print-build-logs --keep-going
 
-# copy the Rust project scaffolding for the given day
+# copy the scaffolding for the given day
 _copy-scaffolding year lang day:
 	mkdir -p "{{year}}/{{lang}}/day-{{day}}"
 	cp -r ./scaffolding/{{lang}}/* "{{year}}/{{lang}}/day-{{day}}"
 	@just _hydrate_{{lang}} {{year}} {{day}}
 
-# fill in the rust template for the given day
+# fill in the Rust template for the given day
 _hydrate_rust year day:
 	fd -e rs -e toml . "{{year}}/rust/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
 
