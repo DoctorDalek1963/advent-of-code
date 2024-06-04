@@ -34,17 +34,8 @@ check-and-test *args:
 			exit(exit_code)
 
 # cargo check and test every day
-check-and-test-all:
-	for dir in $(fd -t d 20 -X fd -t d day); do just _check-and-test-day $dir; done
-
-# cargo check and test the given day
-_check-and-test-day dir:
-	#!/usr/bin/env bash
-	cd {{dir}}
-	export RUSTFLAGS="-Dwarnings"
-	cargo check
-	cargo test
-	cargo test --release
+check-all:
+	fd --full-path -t d '20\d\d/[^/]+$' -x nix flake check path:{} --print-build-logs --keep-going
 
 # copy the Rust project scaffolding for the given day
 _copy-scaffolding year lang day:
