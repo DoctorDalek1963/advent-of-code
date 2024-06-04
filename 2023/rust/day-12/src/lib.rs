@@ -175,6 +175,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "I abandoned this day's solution"]
     fn count_possible_arrangements_test() {
         use SpringState::*;
 

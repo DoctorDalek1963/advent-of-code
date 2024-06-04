@@ -1,5 +1,3 @@
-#![feature(btree_drain_filter)]
-
 pub mod bin;
 
 use nom::{bytes::complete::tag, character::complete, multi::separated_list1, IResult};
@@ -112,9 +110,10 @@ pub fn count_occupied_cells_at_y_level(sb_pairs: Vec<SensorBeaconPair>, y_level:
 pub fn get_tuning_frequency_of_beacon_pos(sb_pairs: Vec<SensorBeaconPair>, max: i32) -> u64 {
     let search_space: Mutex<BTreeSet<Point>> = Mutex::new(BTreeSet::new());
     sb_pairs.par_iter().for_each(|&sbp| {
-        let mut points = sbp.get_points_just_outside_range();
+        let points = sbp.get_points_just_outside_range();
         let points_inside: Vec<Point> = points
-            .drain_filter(|&(x, y)| x >= 0 && x <= max && y >= 0 && y <= max)
+            .into_iter()
+            .filter(|&(x, y)| x >= 0 && x <= max && y >= 0 && y <= max)
             .collect();
 
         search_space.lock().unwrap().extend(points_inside);

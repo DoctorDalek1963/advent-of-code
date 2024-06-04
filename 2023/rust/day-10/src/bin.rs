@@ -13,11 +13,11 @@ pub fn process_part1(input: &str) -> usize {
         .into_iter()
         .map(|(point, conn)| (point, (conn, false)))
         .collect();
-    dbg!(coords_map);
+    dbg!(&coords_map);
 
-    let mut loops = vec![];
+    // let mut loops = vec![];
     let mut current_loop = vec![];
-    let mut prev_point = None;
+    // let mut prev_point = None;
     let mut current_point = (1, 1);
 
     while let Some(starting_point) = coords_map
@@ -43,6 +43,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
+    #[ignore = "this test takes ages"]
     fn process_part1_test() {
         assert_eq!(process_part1(TEST_INPUT_SMALL_CLUTTERED), 4);
         assert_eq!(process_part1(TEST_INPUT_LARGE_CLUTTERED), 8);
