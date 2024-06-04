@@ -7,6 +7,10 @@
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    crane = {
+      url = "github:ipetkov/crane";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {flake-parts, ...}:
@@ -18,14 +22,51 @@
           overlays = [(import inputs.rust-overlay)];
         };
 
-        rustToolchain = pkgs.rust-bin.stable.latest.default;
+        buildRustToolchain = pkgs.rust-bin.selectLatestNightlyWith;
+
+        craneLib = (inputs.crane.mkLib pkgs).overrideToolchain (
+          buildRustToolchain (toolchain: toolchain.default)
+        );
+
+        commonArgs = {
+          pname = "aoc-2023-rust";
+          version = "0.0.0";
+
+          src = pkgs.lib.cleanSourceWith {
+            src = ./.;
+            filter = path: type:
+              (pkgs.lib.hasSuffix "input\.txt" path)
+              || (craneLib.filterCargoSources path type);
+          };
+          strictDeps = true;
+        };
+
+        cargoArtifacts = craneLib.buildDepsOnly commonArgs;
       in {
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = [
-            (rustToolchain.override {
-              extensions = ["rust-analyzer" "rust-src" "rust-std"];
-            })
+            (buildRustToolchain (toolchain:
+              toolchain.default.override {
+                extensions = ["rust-analyzer" "rust-src" "rust-std"];
+              }))
+            pkgs.cargo-nextest
           ];
+        };
+
+        checks = {
+          build = craneLib.cargoBuild (
+            commonArgs
+            // {inherit cargoArtifacts;}
+          );
+
+          fmt = craneLib.cargoFmt commonArgs;
+
+          nextest = craneLib.cargoNextest (commonArgs
+            // {
+              inherit cargoArtifacts;
+              partitions = 1;
+              partitionType = "count";
+            });
         };
       };
     };
