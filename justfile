@@ -47,18 +47,21 @@ _check-and-test-day dir:
 	cargo test --release
 
 # copy the Rust project scaffolding for the given day
-_copy-scaffolding day year:
-	@mkdir -p "{{year}}"
-	mkdir -p "{{year}}/day-{{day}}"
-	cp -r ./scaffolding/rust/* "{{year}}/day-{{day}}"
-	fd -e rs -e toml . "{{year}}/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
+_copy-scaffolding year lang day:
+	mkdir -p "{{year}}/{{lang}}/day-{{day}}"
+	cp -r ./scaffolding/{{lang}}/* "{{year}}/{{lang}}/day-{{day}}"
+	@just _hydrate_{{lang}} {{year}} {{day}}
+
+# fill in the rust template for the given day
+_hydrate_rust year day:
+	fd -e rs -e toml . "{{year}}/rust/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
 
 # get the input file for the given day
-_get-input day year:
+_get-input year lang day:
 	#!/usr/bin/env python
 	from aocd import get_data
 
-	with open('{{justfile_directory()}}/{{year}}/day-{{day}}/input.txt', 'w') as f:
+	with open('{{justfile_directory()}}/{{year}}/{{lang}}/day-{{day}}/input.txt', 'w') as f:
 		f.write(get_data(day={{day}}, year={{year}}) + '\n')
 
 # get the input files for every day
@@ -70,23 +73,19 @@ get-all-inputs:
 
 	async def main():
 		days = subprocess.run(["fd", "-t", "d", "day-"], capture_output=True).stdout.split()
-		processed_days = [re.match(r"(20\d\d)/day-(\d+)/", d.decode("utf-8")).groups(1) for d in days]
+		processed_days = [re.match(r"(20\d\d)/([^/]+)/day-(\d+)/", d.decode("utf-8")).groups() for d in days]
 
 		await asyncio.gather(
-			*[asyncio.create_subprocess_shell(f"just _get-input {day} {year}") for (year, day) in processed_days]
+			*[asyncio.create_subprocess_shell(f"just _get-input {year} {lang} {day}") for (year, lang, day) in processed_days]
 		)
 
 	asyncio.run(main())
 
 # setup the scaffolding and input file for the given day
-setup day year:
-	just _copy-scaffolding {{day}} {{year}}
-	just _get-input {{day}} {{year}}
+setup year lang day:
+	@just _copy-scaffolding {{year}} {{lang}} {{day}}
+	@just _get-input {{year}} {{lang}} {{day}}
 
 # setup the scaffolding and input file for today
-today:
-	just setup "$(date +'%d' | sed 's/^0//')" "$(date +'%Y')"
-
-# make the current day use the nightly channel
-nightly:
-	echo "[toolchain]\nchannel = \"nightly\"" > {{invocation_directory()}}/rust-toolchain.toml
+today lang:
+	just setup "$(date +'%Y')" "{{lang}}" "$(date +'%d' | sed 's/^0//')"
