@@ -39,12 +39,19 @@ check-all:
 
 # copy the scaffolding for the given day
 _copy-scaffolding year lang day:
-	mkdir -p "{{year}}/{{lang}}/day-{{day}}"
-	cp -r ./scaffolding/{{lang}}/* "{{year}}/{{lang}}/day-{{day}}"
-	@just _hydrate_{{lang}} {{year}} {{day}}
+	@just _copy-scaffolding-{{lang}} {{year}} {{day}}
 
-# fill in the Rust template for the given day
-_hydrate_rust year day:
+_copy-scaffolding-elixir year day:
+	mkdir -p "{{year}}/elixir/apps/"
+	cp -r ./scaffolding/elixir "{{year}}/elixir/apps/day_{{day}}"
+	fd -e ex -e exs . "{{year}}/elixir/apps/day_{{day}}/" -X sd -s "DAYNUM" "{{day}}"
+	sd -s "YEARNUM" "{{year}}" "{{year}}/elixir/apps/day_{{day}}/lib/dayDAYNUM.ex"
+	fd . "{{year}}/elixir/apps/day_{{day}}" -x rename "DAYNUM" "{{day}}" {} || true
+
+# copy the Rust scaffolding for the given day
+_copy-scaffolding-rust year day:
+	mkdir -p "{{year}}/rust/day-{{day}}"
+	cp -r ./scaffolding/rust/* "{{year}}/rust/day-{{day}}"
 	fd -e rs -e toml . "{{year}}/rust/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
 
 # get the input file for the given day
@@ -52,7 +59,13 @@ _get-input year lang day:
 	#!/usr/bin/env python
 	from aocd import get_data
 
-	with open('{{justfile_directory()}}/{{year}}/{{lang}}/day-{{day}}/input.txt', 'w') as f:
+	# Map from the language to the right path for input.txt
+	language_map = {
+		"elixir": "{{justfile_directory()}}/{{year}}/elixir/apps/day_{{day}}/input.txt",
+		"rust": "{{justfile_directory()}}/{{year}}/rust/day-{{day}}/input.txt",
+	}
+
+	with open(language_map["{{lang}}"], "w") as f:
 		f.write(get_data(day={{day}}, year={{year}}) + '\n')
 
 # get the input files for every day

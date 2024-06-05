@@ -27,8 +27,10 @@
       in {
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
-            fd
             just
+            fd
+            sd
+            util-linux
             (python3.withPackages (p: [p.aocd]))
           ];
           shellHook = ''
