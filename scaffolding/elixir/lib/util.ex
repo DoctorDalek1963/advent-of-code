@@ -7,12 +7,7 @@ defmodule Util do
     Return the input given in the example, used for testing.
   """
   def get_test_input() do
-    """
-    12
-    14
-    1969
-    100756
-    """
+    ""
   end
 
   @doc """
@@ -23,11 +18,12 @@ defmodule Util do
   end
 
   @doc """
-    Treat the input as an integer on each line, and return the list of parsed ints.
+    Treat the input as a list of integer separated by a delimiter, and return
+    the list of parsed ints.
   """
-  def parse_ints(input) when is_bitstring(input) do
+  def parse_ints(input, delimiter \\ "\n") when is_bitstring(input) do
     input
-    |> String.split("\n")
+    |> String.split(delimiter)
     |> Enum.filter(fn x -> x != "" end)
     |> Enum.map(fn x -> String.to_integer(x) end)
   end
