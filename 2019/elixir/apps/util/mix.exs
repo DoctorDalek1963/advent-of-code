@@ -1,9 +1,9 @@
-defmodule Day2.MixProject do
+defmodule Util.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :day_2,
+      app: :util,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -16,6 +16,6 @@ defmodule Day2.MixProject do
   end
 
   defp deps do
-    [{:util, in_umbrella: true}]
+    []
   end
 end
