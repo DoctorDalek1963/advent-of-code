@@ -76,11 +76,11 @@ get-all-inputs:
 	import subprocess
 
 	async def main():
-		days = subprocess.run(["fd", "-t", "d", "day-"], capture_output=True).stdout.split()
-		processed_days = [re.match(r"(20\d\d)/([^/]+)/day-(\d+)/", d.decode("utf-8")).groups() for d in days]
+		days = subprocess.run(["fd", "-t", "d", "day"], capture_output=True).stdout.split()
+		processed_days = [re.match(r"(20\d\d)/([^/]+)/(apps/)?day[-_](\d+)/", d.decode("utf-8")).groups() for d in days]
 
 		await asyncio.gather(
-			*[asyncio.create_subprocess_shell(f"just _get-input {year} {lang} {day}") for (year, lang, day) in processed_days]
+			*[asyncio.create_subprocess_shell(f"just _get-input {year} {lang} {day}") for (year, lang, _, day) in processed_days]
 		)
 
 	asyncio.run(main())
