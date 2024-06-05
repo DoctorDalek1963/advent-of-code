@@ -30,7 +30,7 @@
 
         commonArgs = {
           pname = "aoc-2023-rust";
-          version = "0.0.0";
+          version = "0.1.0";
 
           src = pkgs.lib.cleanSourceWith {
             src = ./.;
