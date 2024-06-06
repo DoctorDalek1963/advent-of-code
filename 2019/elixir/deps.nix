@@ -37,6 +37,19 @@
       beamDeps = [bunt file_system jason];
     };
 
+    dialyxir = buildMix rec {
+      name = "dialyxir";
+      version = "1.4.3";
+
+      src = fetchHex {
+        pkg = "dialyxir";
+        version = "${version}";
+        sha256 = "bf2cfb75cd5c5006bec30141b131663299c661a864ec7fbbc72dfa557487a986";
+      };
+
+      beamDeps = [erlex];
+    };
+
     earmark_parser = buildMix rec {
       name = "earmark_parser";
       version = "1.4.39";
@@ -45,6 +58,19 @@
         pkg = "earmark_parser";
         version = "${version}";
         sha256 = "06553a88d1f1846da9ef066b87b57c6f605552cfbe40d20bd8d59cc6bde41944";
+      };
+
+      beamDeps = [];
+    };
+
+    erlex = buildMix rec {
+      name = "erlex";
+      version = "0.2.6";
+
+      src = fetchHex {
+        pkg = "erlex";
+        version = "${version}";
+        sha256 = "2ed2e25711feb44d52b17d2780eabf998452f6efda104877a3881c2f8c0c0c75";
       };
 
       beamDeps = [];

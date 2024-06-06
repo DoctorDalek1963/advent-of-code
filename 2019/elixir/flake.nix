@@ -57,6 +57,17 @@
               checkPhase = "mix credo";
             };
 
+            dialyzer = pkgs.beamPackages.buildMix {
+              name = "dialyzer";
+              version = "0.1.0";
+              src = self;
+
+              beamDeps = allUmbrellaBeamDeps;
+
+              doCheck = true;
+              checkPhase = "mix dialyzer";
+            };
+
             format = pkgs.beamPackages.buildMix {
               name = "format";
               version = "0.1.0";
