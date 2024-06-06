@@ -157,7 +157,7 @@ defmodule Day4 do
   @spec process_part1(String.t()) :: integer()
   def process_part1(input) do
     {first, last} = parse_range(input)
-    first..last |> Enum.filter(&possible_password_part1?/1) |> Enum.count()
+    first..last |> Enum.count(&possible_password_part1?/1)
   end
 
   @doc """
@@ -166,6 +166,6 @@ defmodule Day4 do
   @spec process_part2(String.t()) :: integer()
   def process_part2(input) do
     {first, last} = parse_range(input)
-    first..last |> Enum.filter(&possible_password_part2?/1) |> Enum.count()
+    first..last |> Enum.count(&possible_password_part2?/1)
   end
 end
