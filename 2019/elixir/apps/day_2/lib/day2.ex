@@ -6,6 +6,7 @@ defmodule Day2 do
   @doc """
   Process the first part of the puzzle.
   """
+  @spec process_part1(String.t()) :: integer()
   def process_part1(input) do
     {:ok, memory} =
       Util.parse_ints(input, ",")
@@ -19,6 +20,7 @@ defmodule Day2 do
   @doc """
   Process the second part of the puzzle.
   """
+  @spec process_part2(String.t()) :: integer()
   def process_part2(input) do
     bytecode = Util.parse_ints(input, ",")
 
@@ -40,6 +42,7 @@ defmodule Day2 do
   `0..100` and if the interpreter produces the desired value, then it will send
   `[noun: noun, verb: verb]` back to `parent_pid`.
   """
+  @spec part2_helper(pid(), [integer()], integer(), integer()) :: nil
   def part2_helper(parent_pid, bytecode, noun, desired_value) do
     results =
       0..100
@@ -63,8 +66,12 @@ defmodule Day2 do
       end)
 
     case results do
-      [verb] -> send(parent_pid, noun: noun, verb: verb)
-      [] -> nil
+      [verb] ->
+        send(parent_pid, noun: noun, verb: verb)
+        nil
+
+      [] ->
+        nil
     end
   end
 end

@@ -28,6 +28,7 @@ defmodule Interpreter do
       iex> Interpreter.interpret([1, 1, 1, 4, 99, 5, 6, 0, 99])
       {:ok, [30, 1, 1, 4, 2, 5, 6, 0, 99]}
   """
+  @spec interpret([integer()], integer()) :: {:ok, [integer()]} | {:error, String.t()}
   def interpret(bytecode, program_counter \\ 0) when is_list(bytecode) do
     case Enum.slice(bytecode, program_counter, length(bytecode)) do
       # Add

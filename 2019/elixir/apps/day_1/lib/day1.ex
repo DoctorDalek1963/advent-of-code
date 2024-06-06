@@ -6,6 +6,7 @@ defmodule Day1 do
   @doc """
   Process the first part of the puzzle.
   """
+  @spec process_part1(String.t()) :: integer()
   def process_part1(input) do
     Util.parse_ints(input)
     |> Enum.map(fn x -> calculate_fuel(x) end)
@@ -15,6 +16,7 @@ defmodule Day1 do
   @doc """
   Process the second part of the puzzle.
   """
+  @spec process_part2(String.t()) :: integer()
   def process_part2(input) do
     Util.parse_ints(input)
     |> Enum.map(fn x -> recursively_calculate_fuel(x) end)
@@ -39,6 +41,7 @@ defmodule Day1 do
       iex> Day1.calculate_fuel(2)
       -2
   """
+  @spec calculate_fuel(integer()) :: integer()
   def calculate_fuel(mass) do
     div(mass, 3) - 2
   end
@@ -59,6 +62,7 @@ defmodule Day1 do
       iex> Day1.recursively_calculate_fuel(100756)
       50346
   """
+  @spec recursively_calculate_fuel(integer()) :: integer()
   def recursively_calculate_fuel(mass) do
     case calculate_fuel(mass) do
       fuel when fuel > 0 -> fuel + recursively_calculate_fuel(fuel)
