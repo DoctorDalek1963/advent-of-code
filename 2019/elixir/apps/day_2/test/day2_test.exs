@@ -1,7 +1,6 @@
 defmodule Day2Test do
   use ExUnit.Case
   doctest Day2
-  doctest Interpreter
 
   test "process part 1" do
     assert Day2.process_part1(Util.get_real_input()) === 4_138_687

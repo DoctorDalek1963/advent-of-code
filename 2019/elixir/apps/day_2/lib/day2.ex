@@ -12,7 +12,7 @@ defmodule Day2 do
       Util.parse_ints(input, ",")
       |> List.replace_at(1, 12)
       |> List.replace_at(2, 2)
-      |> Interpreter.interpret()
+      |> IntCode.Interpreter.interpret()
 
     Enum.at(memory, 0)
   end
@@ -51,7 +51,7 @@ defmodule Day2 do
          bytecode
          |> List.replace_at(1, noun)
          |> List.replace_at(2, verb)
-         |> Interpreter.interpret()}
+         |> IntCode.Interpreter.interpret()}
       end)
       |> Enum.filter(fn x ->
         case x do
