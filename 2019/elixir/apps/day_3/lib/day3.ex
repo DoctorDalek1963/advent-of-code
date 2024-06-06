@@ -17,7 +17,7 @@ defmodule Day3 do
   A coordinate on the 2D grid. `{x, y}` with positive `x` to the right and
   positive `y` going up.
   """
-  @type coord() :: {integer(), integer()}
+  @type coord() :: {x :: integer(), y :: integer()}
 
   @doc """
   Parse a string like `L3,U2,R1` into a list of movements.
@@ -47,6 +47,30 @@ defmodule Day3 do
   end
 
   @doc """
+  Make a single movement from the starting point in the given direction for the
+  given distance and return all the coordinates that the path will pass through
+  (not including the starting point).
+
+  ## Examples
+      iex> Day3.move({0, 0}, {:right, 2})
+      [{1, 0}, {2, 0}]
+      iex> Day3.move({-2, 3}, {:up, 4})
+      [{-2, 4}, {-2, 5}, {-2, 6}, {-2, 7}]
+  """
+  @spec move(coord(), movement()) :: [coord()]
+  def move({sx, sy}, {direction, distance}) do
+    1..distance
+    |> Enum.map(fn d ->
+      case direction do
+        :right -> {sx + d, sy}
+        :left -> {sx - d, sy}
+        :up -> {sx, sy + d}
+        :down -> {sx, sy - d}
+      end
+    end)
+  end
+
+  @doc """
   Return a list of every new point that the `movement_list` would take us
   through, if we started from the `starting_position`.
 
@@ -58,15 +82,7 @@ defmodule Day3 do
   def make_movements(starting_position, movement_list) do
     case movement_list do
       [movement | other_movements] ->
-        {sx, sy} = starting_position
-
-        new_coords =
-          case movement do
-            {:right, distance} -> 1..distance |> Enum.map(fn d -> {sx + d, sy} end)
-            {:left, distance} -> 1..distance |> Enum.map(fn d -> {sx - d, sy} end)
-            {:up, distance} -> 1..distance |> Enum.map(fn d -> {sx, sy + d} end)
-            {:down, distance} -> 1..distance |> Enum.map(fn d -> {sx, sy - d} end)
-          end
+        new_coords = move(starting_position, movement)
 
         new_coords ++ make_movements(new_coords |> List.last(), other_movements)
 

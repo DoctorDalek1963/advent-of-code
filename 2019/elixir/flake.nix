@@ -46,6 +46,17 @@
         checks =
           packages
           // {
+            credo = pkgs.beamPackages.buildMix {
+              name = "credo";
+              version = "0.1.0";
+              src = self;
+
+              beamDeps = allUmbrellaBeamDeps;
+
+              doCheck = true;
+              checkPhase = "mix credo";
+            };
+
             format = pkgs.beamPackages.buildMix {
               name = "format";
               version = "0.1.0";

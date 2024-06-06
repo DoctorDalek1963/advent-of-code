@@ -23,7 +23,7 @@ defmodule Day2 do
     bytecode = Util.parse_ints(input, ",")
 
     0..100
-    |> Enum.map(fn noun ->
+    |> Enum.each(fn noun ->
       spawn(Day2, :part2_helper, [self(), bytecode, noun, 19_690_720])
     end)
 
