@@ -8,6 +8,6 @@ defmodule DayDAYNUMTest do
 
   @tag :skip
   test "process part 2" do
-    # assert DayDAYNUM.process_part2(Util.get_real_input()) === 0
+    assert DayDAYNUM.process_part2(Util.get_real_input()) === 0
   end
 end
