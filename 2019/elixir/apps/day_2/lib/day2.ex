@@ -1,10 +1,10 @@
 defmodule Day2 do
   @moduledoc """
-    Solve the Advent of Code puzzles for 2019 day 2.
+  Solve the Advent of Code puzzles for 2019 day 2.
   """
 
   @doc """
-    Process the first part of the puzzle.
+  Process the first part of the puzzle.
   """
   def process_part1(input) do
     {:ok, memory} =
@@ -17,7 +17,7 @@ defmodule Day2 do
   end
 
   @doc """
-    Process the second part of the puzzle.
+  Process the second part of the puzzle.
   """
   def process_part2(input) do
     bytecode = Util.parse_ints(input, ",")
@@ -34,11 +34,11 @@ defmodule Day2 do
   end
 
   @doc """
-    A helper function for `process_part2/1`.
+  A helper function for `process_part2/1`.
 
-    Given the starting bytecode and a noun, this function will try every verb
-    in `0..100` and if the interpreter produces the desired value, then it will
-    send `[noun: noun, verb: verb]` back to `parent_pid`.
+  Given the starting bytecode and a noun, this function will try every verb in
+  `0..100` and if the interpreter produces the desired value, then it will send
+  `[noun: noun, verb: verb]` back to `parent_pid`.
   """
   def part2_helper(parent_pid, bytecode, noun, desired_value) do
     results =

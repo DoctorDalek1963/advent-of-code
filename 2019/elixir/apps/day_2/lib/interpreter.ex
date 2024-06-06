@@ -1,20 +1,20 @@
 defmodule Interpreter do
   @moduledoc """
-    Interpret the IntCode language built for AOC 2019.
+  Interpret the `IntCode` language built for AOC 2019.
   """
 
   @doc """
-    Interpret the given bytecode, starting from the specified program counter, or from 0 if not specified.
+  Interpret the given bytecode, starting from the specified program counter, or from 0 if not specified.
 
-    This function will recurse until it reaches the opcode 99, which will cause it to halt.
+  This function will recurse until it reaches the opcode 99, which will cause it to halt.
 
   ## Opcodes
 
-    `[1, $r1, $r2, $r3]` => Fetch the values at `$r1` and `$r2`, add them, and store the result at the address in `$r3`.
+  `[1, $r1, $r2, $r3]` => Fetch the values at `$r1` and `$r2`, add them, and store the result at the address in `$r3`.
 
-    `[2, $r1, $r2, $r3]` => Fetch the values at `$r1` and `$r2`, multiply them, and store the result at the address in `$r3`.
+  `[2, $r1, $r2, $r3]` => Fetch the values at `$r1` and `$r2`, multiply them, and store the result at the address in `$r3`.
 
-    `[99]` => Halt immediately, returning the current state of the interpreter's memory.
+  `[99]` => Halt immediately, returning the current state of the interpreter's memory.
 
   ## Examples
       iex> Interpreter.interpret([1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50])

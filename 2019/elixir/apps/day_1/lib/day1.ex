@@ -1,10 +1,10 @@
 defmodule Day1 do
   @moduledoc """
-    Solve the Advent of Code puzzles for 2019 day 1.
+  Solve the Advent of Code puzzles for 2019 day 1.
   """
 
   @doc """
-    Process the first part of the puzzle.
+  Process the first part of the puzzle.
   """
   def process_part1(input) do
     Util.parse_ints(input)
@@ -13,7 +13,7 @@ defmodule Day1 do
   end
 
   @doc """
-    Process the second part of the puzzle.
+  Process the second part of the puzzle.
   """
   def process_part2(input) do
     Util.parse_ints(input)
@@ -22,10 +22,10 @@ defmodule Day1 do
   end
 
   @doc """
-    Calculate the necessary fuel for this module based on its mass.
+  Calculate the necessary fuel for this module based on its mass.
 
-    Part 2 requires that negative values be clamped to 0, but this function
-    will just return negative values if encountered.
+  Part 2 requires that negative values be clamped to 0, but this function will
+  just return negative values if encountered.
 
   ## Examples
       iex> Day1.calculate_fuel(12)
@@ -44,10 +44,10 @@ defmodule Day1 do
   end
 
   @doc """
-    Recursively calculate the necessary fuel for the given module mass.
+  Recursively calculate the necessary fuel for the given module mass.
 
-    This function will respect the rules of part 2 and calculate the fuel
-    required by fuel, clamping negative values to 0 in the process.
+  This function will respect the rules of part 2 and calculate the fuel
+  required by fuel, clamping negative values to 0 in the process.
 
   ## Examples
       iex> Day1.recursively_calculate_fuel(12)
