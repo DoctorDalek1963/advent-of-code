@@ -8,11 +8,11 @@ defmodule Day2 do
   """
   @spec process_part1(String.t()) :: integer()
   def process_part1(input) do
-    {:ok, memory} =
+    {:halted, memory} =
       Util.parse_ints(input, ",")
       |> List.replace_at(1, 12)
       |> List.replace_at(2, 2)
-      |> IntCode.Interpreter.interpret()
+      |> IntCode.Util.interpret_no_io()
 
     Enum.at(memory, 0)
   end
@@ -51,17 +51,17 @@ defmodule Day2 do
          bytecode
          |> List.replace_at(1, noun)
          |> List.replace_at(2, verb)
-         |> IntCode.Interpreter.interpret()}
+         |> IntCode.Util.interpret_no_io()}
       end)
       |> Enum.filter(fn x ->
         case x do
-          {_, {:ok, [value | _]}} when value == desired_value -> true
+          {_, {:halted, [value | _]}} when value == desired_value -> true
           _ -> false
         end
       end)
       |> Enum.map(fn x ->
         case x do
-          {verb, {:ok, [value | _]}} when value == desired_value -> verb
+          {verb, {:halted, [value | _]}} when value == desired_value -> verb
         end
       end)
 
