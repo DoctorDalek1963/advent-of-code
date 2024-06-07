@@ -21,22 +21,55 @@ defmodule IntCode.Interpreter do
   If the interpreter runs into an error, it will send `{:error, message}`,
   where `message` is a string.
 
-  ## Opcodes
+  ## Instructions
 
-  `[1, $r1, $r2, $r3]` => Fetch the values at `$r1` and `$r2`, add them, and
-  store the result at the address in `$r3`.
+  Most instructions have *parameter modes* for their values. The last two
+  digits of the instruction in base 10 are the opcode. This encodes the main
+  content of the instruction and tells the interpreter what to do. The other
+  digits in base 10 encode the parameter modes of the instructions.
 
-  `[2, $r1, $r2, $r3]` => Fetch the values at `$r1` and `$r2`, multiply them,
-  and store the result at the address in `$r3`.
+  ### Parameter modes
+
+  *Position mode* is represented by 0. In this mode, the parameter is a memory
+  address and the interpreter will fetch the necessary value from that address.
+
+  *Immediate mode* is represented by 1. In this mode, the parameter is a
+  literal value and the interpreter will use the literal value of the parameter
+  for the operation
+
+  ### Opcodes
+
+  `[xy01, $r1, $r2, $r3]` => `$r3 = $r1 + $r2`. `y` is the parameter mode of
+  `$r1` and `x` is the parameter mode of `$r2`. `$r3` is always in position mode.
+
+  `[xy02, $r1, $r2, $r3]` => `$r3 = $r1 * $r2`. `y` is the parameter mode of
+  `$r1` and `x` is the parameter mode of `$r2`. `$r3` is always in position mode.
 
   `[99]` => Halt immediately, returning the current state of the interpreter's memory.
-
   """
 
   @typedoc """
   A snapshot of the interpreter's memory.
   """
   @type memory() :: [integer()]
+
+  @typedoc """
+  A parameter mode. See the module docs for details.
+  """
+  @type parameter_mode() :: :position | :immediate
+
+  @typedoc """
+  A parameter for an instruction, bundled with its mode.
+  """
+  @type parameter() :: {parameter_mode(), integer()}
+
+  @typedoc """
+  An instruction for the interpreter.
+  """
+  @type instruction() ::
+          {:add, parameter(), parameter(), integer()}
+          | {:multiply, parameter(), parameter(), integer()}
+          | :halt
 
   @doc """
   Interpret the given bytecode.
@@ -45,31 +78,155 @@ defmodule IntCode.Interpreter do
   to the user for I/O operations. See the module docs for more details.
   """
   @spec interpret(pid(), memory(), integer()) :: nil
-  def interpret(user_pid, bytecode, program_counter \\ 0)
-      when is_pid(user_pid) and is_list(bytecode) and is_integer(program_counter) do
-    case Enum.slice(bytecode, program_counter, length(bytecode)) do
-      # Add
-      [1, r1, r2, r3 | _] ->
-        interpret(
-          user_pid,
-          List.replace_at(bytecode, r3, Enum.at(bytecode, r1) + Enum.at(bytecode, r2)),
-          program_counter + 4
-        )
+  def interpret(user_pid, memory, program_counter \\ 0)
+      when is_pid(user_pid) and is_list(memory) and is_integer(program_counter) do
+    case parse_instruction(memory, program_counter) do
+      {:error, msg} ->
+        send(user_pid, {:error, msg})
 
-      # Multiply
-      [2, r1, r2, r3 | _] ->
-        interpret(
-          user_pid,
-          List.replace_at(bytecode, r3, Enum.at(bytecode, r1) * Enum.at(bytecode, r2)),
-          program_counter + 4
-        )
+      instruction ->
+        case new_pc(instruction, program_counter) do
+          :halt ->
+            send(user_pid, {:halted, memory})
 
-      # Halt
-      [99 | _] ->
-        send(user_pid, {:halted, bytecode})
+          new_pc when is_integer(new_pc) ->
+            new_memory = apply_instruction(memory, instruction)
+            interpret(user_pid, new_memory, new_pc)
+        end
+    end
+  end
 
-      [] ->
-        send(user_pid, {:error, "program counter out of range"})
+  @doc """
+  Convert a number to a parameter mode.
+
+  ## Examples
+      iex> to_param_mode(0)
+      :position
+      iex> to_param_mode(1)
+      :immediate
+  """
+  @spec to_param_mode(integer()) :: parameter_mode()
+  def to_param_mode(num) do
+    case num do
+      0 -> :position
+      1 -> :immediate
+    end
+  end
+
+  @doc """
+  Parse the instruction in memory at the program counter.
+
+  ## Examples
+      iex> parse_instruction([1, 0, 0, 0], 0)
+      {:add, {:position, 0}, {:position, 0}, 0}
+      iex> parse_instruction([1002, 10, 3, 0], 0)
+      {:multiply, {:position, 10}, {:immediate, 3}, 0}
+      iex> parse_instruction([1, 0, 0, 0, 102, 10, 3, 0, 99], 4)
+      {:multiply, {:immediate, 10}, {:position, 3}, 0}
+      iex> parse_instruction([1, 0, 0, 0, 1002, 10, 3, 0, 99], 8)
+      :halt
+      iex> parse_instruction([], 0)
+      {:error, "program counter out of bounds"}
+  """
+  @spec parse_instruction(memory(), integer()) :: instruction() | {:error, String.t()}
+  def parse_instruction(memory, program_counter) do
+    byte = Enum.at(memory, program_counter)
+
+    case byte do
+      nil ->
+        {:error, "program counter out of bounds"}
+
+      byte when is_integer(byte) ->
+        opcode = rem(byte, 100)
+        mode1 = to_param_mode(rem(div(byte, 100), 10))
+        mode2 = to_param_mode(rem(div(byte, 1000), 10))
+
+        case opcode do
+          1 ->
+            {
+              :add,
+              {mode1, Enum.at(memory, program_counter + 1)},
+              {mode2, Enum.at(memory, program_counter + 2)},
+              Enum.at(memory, program_counter + 3)
+            }
+
+          2 ->
+            {
+              :multiply,
+              {mode1, Enum.at(memory, program_counter + 1)},
+              {mode2, Enum.at(memory, program_counter + 2)},
+              Enum.at(memory, program_counter + 3)
+            }
+
+          99 ->
+            :halt
+        end
+    end
+  end
+
+  @doc """
+  Perform the instruction on the memory and return the new memory after
+  applying the effect of the instruction.
+
+  This function has no special handling for instructions like `:halt`. It will
+  just return the memory unchanged and *will not* send the `{:halted, memory}`
+  message.
+
+  ## Examples
+      iex> apply_instruction(
+      ...>   [1, 2, 3, 4],
+      ...>   {:add, {:position, 1}, {:immediate, 6}, 3}
+      ...> )
+      [1, 2, 3, 8]
+      iex> apply_instruction(
+      ...>   [1, 2, 3, 4],
+      ...>   {:multiply, {:immediate, 10}, {:position, 1}, 2}
+      ...> )
+      [1, 2, 20, 4]
+      iex> apply_instruction([1, 2, 3, 4], :halt)
+      [1, 2, 3, 4]
+  """
+  @spec apply_instruction(memory(), instruction()) :: memory()
+  def apply_instruction(memory, instruction) do
+    case instruction do
+      {:add, r1, r2, r3} ->
+        List.replace_at(memory, r3, get_param(memory, r1) + get_param(memory, r2))
+
+      {:multiply, r1, r2, r3} ->
+        List.replace_at(memory, r3, get_param(memory, r1) * get_param(memory, r2))
+
+      :halt ->
+        memory
+    end
+  end
+
+  @doc """
+  Work out the new program counter based on the old one.
+
+  If the instruction is `:halt`, this function will return `:halt`.
+  """
+  @spec new_pc(instruction(), integer()) :: integer() | :halt
+  def new_pc(instruction, old_pc) do
+    case instruction do
+      {opcode, _, _, _} when is_atom(opcode) -> old_pc + 4
+      :halt -> :halt
+    end
+  end
+
+  @doc """
+  Convert a `t:parameter/0` into a proper value by fetching it from memory if necessary.
+
+  ## Examples
+      iex> get_param([1, 2, 3, 4], {:position, 2})
+      3
+      iex> get_param([1, 2, 3, 4], {:immediate, 5})
+      5
+  """
+  @spec get_param(memory(), parameter()) :: integer()
+  def get_param(memory, {mode, value}) do
+    case mode do
+      :position -> Enum.at(memory, value)
+      :immediate -> value
     end
   end
 end

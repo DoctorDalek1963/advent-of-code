@@ -1,6 +1,7 @@
 defmodule IntCodeInterpreterTest do
   use ExUnit.Case
-  doctest IntCode.Interpreter
+  doctest IntCode.Interpreter, import: true
+  doctest IntCode.Util, import: true
 
   import IntCode.Util
 
@@ -13,7 +14,7 @@ defmodule IntCodeInterpreterTest do
   end
 
   test "errors" do
-    assert interpret_no_io([]) === {:error, "program counter out of range"}
-    assert interpret_no_io([1, 0, 0, 0, 99], 10) === {:error, "program counter out of range"}
+    assert interpret_no_io([]) === {:error, "program counter out of bounds"}
+    assert interpret_no_io([1, 0, 0, 0, 99], 10) === {:error, "program counter out of bounds"}
   end
 end
