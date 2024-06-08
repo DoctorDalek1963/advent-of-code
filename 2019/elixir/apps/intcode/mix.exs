@@ -1,4 +1,4 @@
-defmodule IntCode.MixProject do
+defmodule Intcode.MixProject do
   use Mix.Project
 
   def project do

@@ -1,8 +1,8 @@
-defmodule IntCode.Interpreter do
+defmodule Intcode.Interpreter do
   @moduledoc """
-  Interpret the `IntCode` language built for AOC 2019.
+  Interpret the `Intcode` language built for AOC 2019.
 
-  `IntCode` is a system of bytecode, which operates on a list of integers. This
+  `Intcode` is a system of bytecode, which operates on a list of integers. This
   interpreter is implemented in a way that makes use of message passing to
   interface with the user.
 

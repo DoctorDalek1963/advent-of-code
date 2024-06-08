@@ -1,11 +1,11 @@
-defmodule IntCode.Util do
+defmodule Intcode.Util do
   @moduledoc """
-  Some simple utility functions for starting and interacting with the `IntCode.Interpreter`.
+  Some simple utility functions for starting and interacting with the `Intcode.Interpreter`.
   """
 
   @doc """
   Start the interpreter and return its PID to allow communication. See the docs
-  of `IntCode.Interpreter` for message formats.
+  of `Intcode.Interpreter` for message formats.
 
   If given a string, parse it as a comma-separated list of integers and start
   the interpreter with that bytecode. If given a list of integers, then just
@@ -22,7 +22,7 @@ defmodule IntCode.Util do
 
   @spec start_interpreter([integer()], integer()) :: pid()
   def start_interpreter(bytecode, program_counter) when is_list(bytecode) do
-    spawn(IntCode.Interpreter, :interpret, [self(), bytecode, program_counter])
+    spawn(Intcode.Interpreter, :interpret, [self(), bytecode, program_counter])
   end
 
   @doc """

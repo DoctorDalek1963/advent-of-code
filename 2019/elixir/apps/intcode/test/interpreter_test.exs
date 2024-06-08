@@ -1,9 +1,9 @@
-defmodule IntCodeInterpreterTest do
+defmodule IntcodeInterpreterTest do
   use ExUnit.Case
-  doctest IntCode.Interpreter, import: true
-  doctest IntCode.Util, import: true
+  doctest Intcode.Interpreter, import: true
+  doctest Intcode.Util, import: true
 
-  import IntCode.Util
+  import Intcode.Util
 
   test "add, multiply, and halt" do
     assert interpret_no_io([99]) === {:halted, [99]}
