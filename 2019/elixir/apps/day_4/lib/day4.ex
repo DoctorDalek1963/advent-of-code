@@ -7,7 +7,7 @@ defmodule Day4 do
   Parse a range of integers from the input, where the two integers are separated by `-`.
 
   ## Examples
-      iex> Day4.parse_range("324870-763981")
+      iex> parse_range("324870-763981")
       {324870, 763981}
   """
   @spec parse_range(String.t()) :: {integer(), integer()}
@@ -20,11 +20,11 @@ defmodule Day4 do
   Are all the digits in this password increasing?
 
   ## Examples
-      iex> Day4.increasing?(123456)
+      iex> increasing?(123456)
       true
-      iex> Day4.increasing?(123453)
+      iex> increasing?(123453)
       false
-      iex> Day4.increasing?(123444)
+      iex> increasing?(123444)
       true
   """
   @spec increasing?(integer()) :: boolean()
@@ -49,25 +49,25 @@ defmodule Day4 do
   other. The pair of digits do not need to be isolated, unlike in part 2.
 
   ## Examples
-      iex> Day4.possible_password_part1?(111111)
+      iex> possible_password_part1?(111111)
       true
-      iex> Day4.possible_password_part1?(223450)
+      iex> possible_password_part1?(223450)
       false
-      iex> Day4.possible_password_part1?(123789)
+      iex> possible_password_part1?(123789)
       false
-      iex> Day4.possible_password_part1?(122779)
+      iex> possible_password_part1?(122779)
       true
-      iex> Day4.possible_password_part1?(537291)
+      iex> possible_password_part1?(537291)
       false
-      iex> Day4.possible_password_part1?(112341)
+      iex> possible_password_part1?(112341)
       false
-      iex> Day4.possible_password_part1?(122222)
+      iex> possible_password_part1?(122222)
       true
-      iex> Day4.possible_password_part1?(778999)
+      iex> possible_password_part1?(778999)
       true
-      iex> Day4.possible_password_part1?(567888)
+      iex> possible_password_part1?(567888)
       true
-      iex> Day4.possible_password_part1?(567889)
+      iex> possible_password_part1?(567889)
       true
   """
   @spec possible_password_part1?(integer()) :: boolean()
@@ -94,25 +94,25 @@ defmodule Day4 do
   identical digits to be isolated from other digits of that type.
 
   ## Examples
-      iex> Day4.possible_password_part2?(111111)
+      iex> possible_password_part2?(111111)
       false
-      iex> Day4.possible_password_part2?(223450)
+      iex> possible_password_part2?(223450)
       false
-      iex> Day4.possible_password_part2?(123789)
+      iex> possible_password_part2?(123789)
       false
-      iex> Day4.possible_password_part2?(122779)
+      iex> possible_password_part2?(122779)
       true
-      iex> Day4.possible_password_part2?(537291)
+      iex> possible_password_part2?(537291)
       false
-      iex> Day4.possible_password_part2?(112341)
+      iex> possible_password_part2?(112341)
       false
-      iex> Day4.possible_password_part2?(122222)
+      iex> possible_password_part2?(122222)
       false
-      iex> Day4.possible_password_part2?(778999)
+      iex> possible_password_part2?(778999)
       true
-      iex> Day4.possible_password_part2?(567888)
+      iex> possible_password_part2?(567888)
       false
-      iex> Day4.possible_password_part2?(567889)
+      iex> possible_password_part2?(567889)
       true
   """
   @spec possible_password_part2?(integer()) :: boolean()
@@ -129,9 +129,9 @@ defmodule Day4 do
   Count consecutive items in a list and return a list of their counts.
 
   ## Examples
-      iex> Day4.count_consecutive([:a, :a, :b, :c, :c, :c])
+      iex> count_consecutive([:a, :a, :b, :c, :c, :c])
       [a: 2, b: 1, c: 3]
-      iex> Day4.count_consecutive([1, 2, 2, 2, 3, 7, 1, 1, 3, 3])
+      iex> count_consecutive([1, 2, 2, 2, 3, 7, 1, 1, 3, 3])
       [{1, 1}, {2, 3}, {3, 1}, {7, 1}, {1, 2}, {3, 2}]
   """
   @spec count_consecutive([term], [{term, integer()}]) :: [{term, integer()}]

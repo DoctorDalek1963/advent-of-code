@@ -1,6 +1,6 @@
 defmodule DayDAYNUMTest do
   use ExUnit.Case
-  doctest DayDAYNUM
+  doctest DayDAYNUM, import: true
 
   test "process part 1" do
     assert DayDAYNUM.process_part1(Util.get_real_input()) === 0

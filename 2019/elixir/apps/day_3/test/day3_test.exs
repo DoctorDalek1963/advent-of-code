@@ -1,6 +1,6 @@
 defmodule Day3Test do
   use ExUnit.Case
-  doctest Day3
+  doctest Day3, import: true
 
   test "process part 1" do
     assert Day3.process_part1("""

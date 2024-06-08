@@ -23,9 +23,9 @@ defmodule Day3 do
   Parse a string like `L3,U2,R1` into a list of movements.
 
   ## Example
-      iex> Day3.parse_direction_list("L3,U2,R1")
+      iex> parse_direction_list("L3,U2,R1")
       [left: 3, up: 2, right: 1]
-      iex> Day3.parse_direction_list("D19,L12,U3,R4,D2")
+      iex> parse_direction_list("D19,L12,U3,R4,D2")
       [down: 19, left: 12, up: 3, right: 4, down: 2]
   """
   @spec parse_direction_list(String.t()) :: [movement()]
@@ -52,9 +52,9 @@ defmodule Day3 do
   (not including the starting point).
 
   ## Examples
-      iex> Day3.move({0, 0}, {:right, 2})
+      iex> move({0, 0}, {:right, 2})
       [{1, 0}, {2, 0}]
-      iex> Day3.move({-2, 3}, {:up, 4})
+      iex> move({-2, 3}, {:up, 4})
       [{-2, 4}, {-2, 5}, {-2, 6}, {-2, 7}]
   """
   @spec move(coord(), movement()) :: [coord()]
@@ -75,7 +75,7 @@ defmodule Day3 do
   through, if we started from the `starting_position`.
 
   ## Examples
-      iex> Day3.make_movements({0, 0}, [left: 3, up: 2, right: 1])
+      iex> make_movements({0, 0}, [left: 3, up: 2, right: 1])
       [{-1, 0}, {-2, 0}, {-3, 0}, {-3, 1}, {-3, 2}, {-2, 2}]
   """
   @spec make_movements(coord(), [movement()]) :: [coord()]

@@ -1,6 +1,6 @@
 defmodule Day1Test do
   use ExUnit.Case
-  doctest Day1
+  doctest Day1, import: true
 
   defp get_test_input() do
     """

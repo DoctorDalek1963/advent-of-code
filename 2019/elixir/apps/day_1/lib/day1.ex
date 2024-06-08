@@ -30,15 +30,15 @@ defmodule Day1 do
   just return negative values if encountered.
 
   ## Examples
-      iex> Day1.calculate_fuel(12)
+      iex> calculate_fuel(12)
       2
-      iex> Day1.calculate_fuel(14)
+      iex> calculate_fuel(14)
       2
-      iex> Day1.calculate_fuel(1969)
+      iex> calculate_fuel(1969)
       654
-      iex> Day1.calculate_fuel(100756)
+      iex> calculate_fuel(100756)
       33583
-      iex> Day1.calculate_fuel(2)
+      iex> calculate_fuel(2)
       -2
   """
   @spec calculate_fuel(integer()) :: integer()
@@ -53,13 +53,13 @@ defmodule Day1 do
   required by fuel, clamping negative values to 0 in the process.
 
   ## Examples
-      iex> Day1.recursively_calculate_fuel(12)
+      iex> recursively_calculate_fuel(12)
       2
-      iex> Day1.recursively_calculate_fuel(14)
+      iex> recursively_calculate_fuel(14)
       2
-      iex> Day1.recursively_calculate_fuel(1969)
+      iex> recursively_calculate_fuel(1969)
       966
-      iex> Day1.recursively_calculate_fuel(100756)
+      iex> recursively_calculate_fuel(100756)
       50346
   """
   @spec recursively_calculate_fuel(integer()) :: integer()
