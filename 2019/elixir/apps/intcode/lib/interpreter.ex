@@ -64,11 +64,18 @@ defmodule Intcode.Interpreter do
   @type parameter() :: {parameter_mode(), integer()}
 
   @typedoc """
+  An alias used for an instruction parameter which is always an address.
+  """
+  @type address() :: integer()
+
+  @typedoc """
   An instruction for the interpreter.
   """
   @type instruction() ::
-          {:add, parameter(), parameter(), integer()}
-          | {:multiply, parameter(), parameter(), integer()}
+          {:add, parameter(), parameter(), address()}
+          | {:multiply, parameter(), parameter(), address()}
+          | {:input, address()}
+          | {:output, parameter()}
           | :halt
 
   @doc """
@@ -90,7 +97,7 @@ defmodule Intcode.Interpreter do
             send(user_pid, {:halted, memory})
 
           new_pc when is_integer(new_pc) ->
-            new_memory = apply_instruction(memory, instruction)
+            new_memory = apply_instruction(memory, user_pid, instruction)
             interpret(user_pid, new_memory, new_pc)
         end
     end
@@ -126,7 +133,7 @@ defmodule Intcode.Interpreter do
       iex> parse_instruction([1, 0, 0, 0, 1002, 10, 3, 0, 99], 8)
       :halt
       iex> parse_instruction([], 0)
-      {:error, "program counter out of bounds"}
+      {:error, "program counter out of bounds (address 0)"}
   """
   @spec parse_instruction(memory(), integer()) :: instruction() | {:error, String.t()}
   def parse_instruction(memory, program_counter) do
@@ -134,7 +141,7 @@ defmodule Intcode.Interpreter do
 
     case byte do
       nil ->
-        {:error, "program counter out of bounds"}
+        {:error, "program counter out of bounds (address #{program_counter})"}
 
       byte when is_integer(byte) ->
         opcode = rem(byte, 100)
@@ -158,8 +165,23 @@ defmodule Intcode.Interpreter do
               Enum.at(memory, program_counter + 3)
             }
 
+          3 ->
+            {
+              :input,
+              Enum.at(memory, program_counter + 1)
+            }
+
+          4 ->
+            {
+              :output,
+              {mode1, Enum.at(memory, program_counter + 1)}
+            }
+
           99 ->
             :halt
+
+          _ ->
+            {:error, "unrecognised opcode #{opcode} at address #{program_counter}"}
         end
     end
   end
@@ -172,28 +194,46 @@ defmodule Intcode.Interpreter do
   just return the memory unchanged and *will not* send the `{:halted, memory}`
   message.
 
+  In constrast, it will send the `:awaiting_input` and `{:output, value}`
+  messages to the user.
+
   ## Examples
+      iex> user_pid = nil # Should be the PID of the process that will handle I/O
       iex> apply_instruction(
       ...>   [1, 2, 3, 4],
+      ...>   user_pid,
       ...>   {:add, {:position, 1}, {:immediate, 6}, 3}
       ...> )
       [1, 2, 3, 8]
       iex> apply_instruction(
       ...>   [1, 2, 3, 4],
+      ...>   user_pid,
       ...>   {:multiply, {:immediate, 10}, {:position, 1}, 2}
       ...> )
       [1, 2, 20, 4]
-      iex> apply_instruction([1, 2, 3, 4], :halt)
+      iex> apply_instruction([1, 2, 3, 4], user_pid, :halt)
       [1, 2, 3, 4]
   """
-  @spec apply_instruction(memory(), instruction()) :: memory()
-  def apply_instruction(memory, instruction) do
+  @spec apply_instruction(memory(), pid(), instruction()) :: memory()
+  def apply_instruction(memory, user_pid, instruction) do
     case instruction do
       {:add, r1, r2, r3} ->
         List.replace_at(memory, r3, get_param(memory, r1) + get_param(memory, r2))
 
       {:multiply, r1, r2, r3} ->
         List.replace_at(memory, r3, get_param(memory, r1) * get_param(memory, r2))
+
+      {:input, addr} ->
+        send(user_pid, :awaiting_input)
+
+        receive do
+          {:input, value} when is_integer(value) ->
+            List.replace_at(memory, addr, value)
+        end
+
+      {:output, r1} ->
+        send(user_pid, {:output, get_param(memory, r1)})
+        memory
 
       :halt ->
         memory
@@ -208,6 +248,8 @@ defmodule Intcode.Interpreter do
   @spec new_pc(instruction(), integer()) :: integer() | :halt
   def new_pc(instruction, old_pc) do
     case instruction do
+      {opcode, _} when is_atom(opcode) -> old_pc + 2
+      {opcode, _, _} when is_atom(opcode) -> old_pc + 3
       {opcode, _, _, _} when is_atom(opcode) -> old_pc + 4
       :halt -> :halt
     end
@@ -221,12 +263,20 @@ defmodule Intcode.Interpreter do
       3
       iex> get_param([1, 2, 3, 4], {:immediate, 5})
       5
+      iex> get_param([1, 2, 3, 4], {:position, 5})
+      {:error, "attempted to fetch from out-of-bounds memory (address 5)"}
   """
-  @spec get_param(memory(), parameter()) :: integer()
+  @spec get_param(memory(), parameter()) :: integer() | {:error, String.t()}
   def get_param(memory, {mode, value}) do
     case mode do
-      :position -> Enum.at(memory, value)
-      :immediate -> value
+      :position ->
+        case Enum.at(memory, value) do
+          nil -> {:error, "attempted to fetch from out-of-bounds memory (address #{value})"}
+          x when is_integer(x) -> x
+        end
+
+      :immediate ->
+        value
     end
   end
 end
