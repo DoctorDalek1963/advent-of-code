@@ -93,7 +93,7 @@ defmodule Intcode.Interpreter do
   It will also kill this interpreter's process immediately after sending an
   `{:error, message}` signal to the user.
   """
-  @spec interpret(pid(), memory(), integer()) :: nil
+  @spec interpret(pid(), memory(), integer()) :: true
   def interpret(user_pid, memory, program_counter \\ 0)
       when is_pid(user_pid) and is_list(memory) and is_integer(program_counter) do
     case parse_instruction(memory, program_counter) do
