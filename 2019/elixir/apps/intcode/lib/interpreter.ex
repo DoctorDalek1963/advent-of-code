@@ -76,6 +76,10 @@ defmodule Intcode.Interpreter do
           | {:multiply, parameter(), parameter(), address()}
           | {:input, address()}
           | {:output, parameter()}
+          | {:jump_if_true, parameter(), parameter()}
+          | {:jump_if_false, parameter(), parameter()}
+          | {:less_than, parameter(), parameter(), address()}
+          | {:equals, parameter(), parameter(), address()}
           | :halt
 
   @doc """
@@ -83,6 +87,9 @@ defmodule Intcode.Interpreter do
 
   The first argument is the PID of the user. The interpreter will send messages
   to the user for I/O operations. See the module docs for more details.
+
+  This is the only function that is allowed to send `{:halted, memory}` to the
+  user, and when it does, it will immediately kill this interpreter's process.
   """
   @spec interpret(pid(), memory(), integer()) :: nil
   def interpret(user_pid, memory, program_counter \\ 0)
@@ -92,9 +99,10 @@ defmodule Intcode.Interpreter do
         send(user_pid, {:error, msg})
 
       instruction ->
-        case new_pc(instruction, program_counter) do
+        case new_pc(instruction, memory, program_counter) do
           :halt ->
             send(user_pid, {:halted, memory})
+            Process.exit(self(), :kill)
 
           new_pc when is_integer(new_pc) ->
             new_memory = apply_instruction(memory, user_pid, instruction)
@@ -148,33 +156,76 @@ defmodule Intcode.Interpreter do
         mode1 = to_param_mode(rem(div(byte, 100), 10))
         mode2 = to_param_mode(rem(div(byte, 1000), 10))
 
+        get_mem = fn offset ->
+          case Enum.at(memory, program_counter + offset) do
+            nil ->
+              {
+                :error,
+                "failed to find instruction parameter at address #{program_counter + offset}"
+              }
+
+            x when is_integer(x) ->
+              x
+          end
+        end
+
         case opcode do
           1 ->
             {
               :add,
-              {mode1, Enum.at(memory, program_counter + 1)},
-              {mode2, Enum.at(memory, program_counter + 2)},
-              Enum.at(memory, program_counter + 3)
+              {mode1, get_mem.(1)},
+              {mode2, get_mem.(2)},
+              get_mem.(3)
             }
 
           2 ->
             {
               :multiply,
-              {mode1, Enum.at(memory, program_counter + 1)},
-              {mode2, Enum.at(memory, program_counter + 2)},
-              Enum.at(memory, program_counter + 3)
+              {mode1, get_mem.(1)},
+              {mode2, get_mem.(2)},
+              get_mem.(3)
             }
 
           3 ->
             {
               :input,
-              Enum.at(memory, program_counter + 1)
+              get_mem.(1)
             }
 
           4 ->
             {
               :output,
-              {mode1, Enum.at(memory, program_counter + 1)}
+              {mode1, get_mem.(1)}
+            }
+
+          5 ->
+            {
+              :jump_if_true,
+              {mode1, get_mem.(1)},
+              {mode2, get_mem.(2)}
+            }
+
+          6 ->
+            {
+              :jump_if_false,
+              {mode1, get_mem.(1)},
+              {mode2, get_mem.(2)}
+            }
+
+          7 ->
+            {
+              :less_than,
+              {mode1, get_mem.(1)},
+              {mode2, get_mem.(2)},
+              get_mem.(3)
+            }
+
+          8 ->
+            {
+              :equals,
+              {mode1, get_mem.(1)},
+              {mode2, get_mem.(2)},
+              get_mem.(3)
             }
 
           99 ->
@@ -235,6 +286,27 @@ defmodule Intcode.Interpreter do
         send(user_pid, {:output, get_param(memory, r1)})
         memory
 
+      # Jumps don't affect memory. They're handled in `new_pc/3`
+      {:jump_if_true, _, _} ->
+        memory
+
+      {:jump_if_false, _, _} ->
+        memory
+
+      {:less_than, r1, r2, r3} ->
+        if get_param(memory, r1) < get_param(memory, r2) do
+          List.replace_at(memory, r3, 1)
+        else
+          List.replace_at(memory, r3, 0)
+        end
+
+      {:equals, r1, r2, r3} ->
+        if get_param(memory, r1) === get_param(memory, r2) do
+          List.replace_at(memory, r3, 1)
+        else
+          List.replace_at(memory, r3, 0)
+        end
+
       :halt ->
         memory
     end
@@ -245,13 +317,38 @@ defmodule Intcode.Interpreter do
 
   If the instruction is `:halt`, this function will return `:halt`.
   """
-  @spec new_pc(instruction(), integer()) :: integer() | :halt
-  def new_pc(instruction, old_pc) do
+  @spec new_pc(instruction(), memory(), integer()) :: integer() | :halt
+  def new_pc(instruction, memory, old_pc) do
     case instruction do
-      {opcode, _} when is_atom(opcode) -> old_pc + 2
-      {opcode, _, _} when is_atom(opcode) -> old_pc + 3
-      {opcode, _, _, _} when is_atom(opcode) -> old_pc + 4
-      :halt -> :halt
+      {:jump_if_true, r1, r2} ->
+        cond = get_param(memory, r1)
+
+        if is_integer(cond) and cond !== 0 do
+          get_param(memory, r2)
+        else
+          old_pc + 3
+        end
+
+      {:jump_if_false, r1, r2} ->
+        cond = get_param(memory, r1)
+
+        if is_integer(cond) and cond === 0 do
+          get_param(memory, r2)
+        else
+          old_pc + 3
+        end
+
+      :halt ->
+        :halt
+
+      {opcode, _} when is_atom(opcode) ->
+        old_pc + 2
+
+      {opcode, _, _} when is_atom(opcode) ->
+        old_pc + 3
+
+      {opcode, _, _, _} when is_atom(opcode) ->
+        old_pc + 4
     end
   end
 

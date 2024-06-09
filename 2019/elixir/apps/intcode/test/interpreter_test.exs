@@ -52,24 +52,132 @@ defmodule IntcodeInterpreterTest do
     int_pid = start_interpreter([3, 0, 99])
     assert_reply(:awaiting_input, send(int_pid, {:input, 11}))
     assert_receive {:halted, [11, 0, 99]}
-    Process.exit(int_pid, :kill)
 
     int_pid = start_interpreter([3, 1, 99])
     assert_reply(:awaiting_input, send(int_pid, {:input, -102}))
     assert_receive {:halted, [3, -102, 99]}
-    Process.exit(int_pid, :kill)
   end
 
   test "output" do
-    int_pid = start_interpreter([4, 2, 99])
+    start_interpreter([4, 2, 99])
     assert_receive {:output, 99}
     assert_receive {:halted, [4, 2, 99]}
-    Process.exit(int_pid, :kill)
 
-    int_pid = start_interpreter([104, 506, 99])
+    start_interpreter([104, 506, 99])
     assert_receive {:output, 506}
     assert_receive {:halted, [104, 506, 99]}
-    Process.exit(int_pid, :kill)
+  end
+
+  test "equality" do
+    # Equality with I/O in position mode
+    int_pid = start_interpreter([3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 8}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 9, 8, 9, 10, 9, 4, 9, 99, 1, 8]}
+
+    int_pid = start_interpreter([3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8])
+    assert_reply(:awaiting_input, send(int_pid, {:input, -2}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 9, 8, 9, 10, 9, 4, 9, 99, 0, 8]}
+
+    int_pid = start_interpreter([3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 230}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 9, 8, 9, 10, 9, 4, 9, 99, 0, 8]}
+
+    # Equality with I/O in immediate mode
+    int_pid = start_interpreter([3, 3, 1108, -1, 8, 3, 4, 3, 99])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 8}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 3, 1108, 1, 8, 3, 4, 3, 99]}
+
+    int_pid = start_interpreter([3, 3, 1108, -1, 8, 3, 4, 3, 99])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 3}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 3, 1108, 0, 8, 3, 4, 3, 99]}
+
+    int_pid = start_interpreter([3, 3, 1108, -1, 8, 3, 4, 3, 99])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 3562}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 3, 1108, 0, 8, 3, 4, 3, 99]}
+  end
+
+  test "less than" do
+    # Less than with I/O in position mode
+    int_pid = start_interpreter([3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 2}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 9, 7, 9, 10, 9, 4, 9, 99, 1, 8]}
+
+    int_pid = start_interpreter([3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8])
+    assert_reply(:awaiting_input, send(int_pid, {:input, -100}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 9, 7, 9, 10, 9, 4, 9, 99, 1, 8]}
+
+    int_pid = start_interpreter([3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 100}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 9, 7, 9, 10, 9, 4, 9, 99, 0, 8]}
+
+    int_pid = start_interpreter([3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 8}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 9, 7, 9, 10, 9, 4, 9, 99, 0, 8]}
+
+    # Less than with I/O in immediate mode
+    int_pid = start_interpreter([3, 3, 1107, -1, 8, 3, 4, 3, 99])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 2}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 3, 1107, 1, 8, 3, 4, 3, 99]}
+
+    int_pid = start_interpreter([3, 3, 1107, -1, 8, 3, 4, 3, 99])
+    assert_reply(:awaiting_input, send(int_pid, {:input, -100}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 3, 1107, 1, 8, 3, 4, 3, 99]}
+
+    int_pid = start_interpreter([3, 3, 1107, -1, 8, 3, 4, 3, 99])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 100}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 3, 1107, 0, 8, 3, 4, 3, 99]}
+
+    int_pid = start_interpreter([3, 3, 1107, -1, 8, 3, 4, 3, 99])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 8}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 3, 1107, 0, 8, 3, 4, 3, 99]}
+  end
+
+  test "jump with I/O equality check" do
+    # Position mode
+    int_pid = start_interpreter([3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 0}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, 0, 0, 1, 9]}
+
+    int_pid = start_interpreter([3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 1}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, 1, 1, 1, 9]}
+
+    int_pid = start_interpreter([3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 13_906}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, 13_906, 1, 1, 9]}
+
+    # Immediate mode
+    int_pid = start_interpreter([3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 0}))
+    assert_receive {:output, 0}
+    assert_receive {:halted, [3, 3, 1105, 0, 9, 1101, 0, 0, 12, 4, 12, 99, 0]}
+
+    int_pid = start_interpreter([3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 1}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 3, 1105, 1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]}
+
+    int_pid = start_interpreter([3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1])
+    assert_reply(:awaiting_input, send(int_pid, {:input, 13_906}))
+    assert_receive {:output, 1}
+    assert_receive {:halted, [3, 3, 1105, 13_906, 9, 1101, 0, 0, 12, 4, 12, 99, 1]}
   end
 
   test "combinations" do
@@ -81,13 +189,48 @@ defmodule IntcodeInterpreterTest do
     int_pid = start_interpreter([3, 1, 101, 10, 1, 0, 99])
     assert_reply(:awaiting_input, send(int_pid, {:input, 42}))
     assert_receive {:halted, [52, 42, 101, 10, 1, 0, 99]}
-    Process.exit(int_pid, :kill)
 
     # Multiply with input
     int_pid = start_interpreter([3, 1, 102, 10, 1, 0, 99])
     assert_reply(:awaiting_input, send(int_pid, {:input, 42}))
     assert_receive {:halted, [420, 42, 102, 10, 1, 0, 99]}
-    Process.exit(int_pid, :kill)
+
+    # Check for 8 (taken from the end of day 5 part 2)
+    int_pid =
+      start_interpreter(
+        [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20] ++
+          [1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125] ++
+          [20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101] ++
+          [1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]
+      )
+
+    assert_reply(:awaiting_input, send(int_pid, {:input, -2}))
+    assert_receive {:output, 999}
+    assert_receive {:halted, _}
+
+    int_pid =
+      start_interpreter(
+        [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20] ++
+          [1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125] ++
+          [20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101] ++
+          [1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]
+      )
+
+    assert_reply(:awaiting_input, send(int_pid, {:input, 8}))
+    assert_receive {:output, 1000}
+    assert_receive {:halted, _}
+
+    int_pid =
+      start_interpreter(
+        [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20] ++
+          [1006, 20, 31, 1106, 0, 36, 98, 0, 0, 1002, 21, 125] ++
+          [20, 4, 20, 1105, 1, 46, 104, 999, 1105, 1, 46, 1101] ++
+          [1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]
+      )
+
+    assert_reply(:awaiting_input, send(int_pid, {:input, 100}))
+    assert_receive {:output, 1001}
+    assert_receive {:halted, _}
   end
 
   test "errors" do
