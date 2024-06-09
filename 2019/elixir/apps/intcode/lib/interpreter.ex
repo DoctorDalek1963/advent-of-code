@@ -145,9 +145,7 @@ defmodule Intcode.Interpreter do
   """
   @spec parse_instruction(memory(), integer()) :: instruction() | {:error, String.t()}
   def parse_instruction(memory, program_counter) do
-    byte = Enum.at(memory, program_counter)
-
-    case byte do
+    case Enum.at(memory, program_counter) do
       nil ->
         {:error, "program counter out of bounds (address #{program_counter})"}
 
