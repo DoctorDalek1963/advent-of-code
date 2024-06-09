@@ -90,6 +90,8 @@ defmodule Intcode.Interpreter do
 
   This is the only function that is allowed to send `{:halted, memory}` to the
   user, and when it does, it will immediately kill this interpreter's process.
+  It will also kill this interpreter's process immediately after sending an
+  `{:error, message}` signal to the user.
   """
   @spec interpret(pid(), memory(), integer()) :: nil
   def interpret(user_pid, memory, program_counter \\ 0)
@@ -97,6 +99,7 @@ defmodule Intcode.Interpreter do
     case parse_instruction(memory, program_counter) do
       {:error, msg} ->
         send(user_pid, {:error, msg})
+        Process.exit(self(), :kill)
 
       instruction ->
         case new_pc(instruction, memory, program_counter) do
