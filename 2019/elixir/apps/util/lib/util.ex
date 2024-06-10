@@ -6,7 +6,7 @@ defmodule Util do
   @doc """
     Read my real input from `input.txt`.
   """
-  def get_real_input() do
+  def get_input() do
     File.read!("./input.txt")
   end
 

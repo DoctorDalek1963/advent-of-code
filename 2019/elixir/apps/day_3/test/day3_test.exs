@@ -18,7 +18,7 @@ defmodule Day3Test do
            U98,R91,D20,R16,D67,R40,U7,R15,U6,R7
            """) === 135
 
-    assert Day3.process_part1(Util.get_real_input()) === 1064
+    assert Day3.process_part1(Util.get_input()) === 1064
   end
 
   test "process part 2" do
@@ -37,6 +37,6 @@ defmodule Day3Test do
            U98,R91,D20,R16,D67,R40,U7,R15,U6,R7
            """) === 410
 
-    assert Day3.process_part2(Util.get_real_input()) === 25_676
+    assert Day3.process_part2(Util.get_input()) === 25_676
   end
 end
