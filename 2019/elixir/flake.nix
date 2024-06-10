@@ -34,6 +34,7 @@
             src = self;
 
             beamDeps = allUmbrellaBeamDeps;
+            mixEnv = "dev";
 
             postBuild = "mix docs --no-deps-check";
             postInstall = ''
@@ -63,6 +64,7 @@
               src = self;
 
               beamDeps = allUmbrellaBeamDeps;
+              mixEnv = "dev";
 
               doCheck = true;
               checkPhase = "mix dialyzer";
