@@ -24,6 +24,25 @@ defmodule Day6 do
   end
 
   @doc """
+  Make a map from a list of orbit pairs. The result will map each orbiter to its direct orbitee.
+
+  ## Examples
+      iex> make_orbit_map([
+      ...>   [orbiter: "A", orbitee: "COM"],
+      ...>   [orbiter: "B", orbitee: "A"],
+      ...>   [orbiter: "C", orbitee: "A"]
+      ...> ])
+      %{"A" => "COM", "B" => "A", "C" => "A"}
+  """
+  @spec make_orbit_map([orbit_pair()]) :: %{String.t() => String.t()}
+  def make_orbit_map(orbit_list) do
+    Map.new(
+      orbit_list
+      |> Enum.map(fn [orbiter: orbiter, orbitee: orbitee] -> {orbiter, orbitee} end)
+    )
+  end
+
+  @doc """
   Count all the direct and indirect orbits that occur through the list of orbit pairs.
 
   Essentially, we're counting how many hops it takes for each item to reach "COM".
@@ -47,12 +66,7 @@ defmodule Day6 do
       orbit_list
       |> Enum.map(fn [orbiter: orbiter, orbitee: _] -> orbiter end)
 
-    orbit_map =
-      Map.new(
-        orbit_list
-        |> Enum.map(fn [orbiter: orbiter, orbitee: orbitee] -> {orbiter, orbitee} end)
-      )
-
+    orbit_map = make_orbit_map(orbit_list)
     count_map = %{"COM" => 0}
 
     count_orbits(orbiter_list, orbit_map, count_map)
@@ -119,6 +133,23 @@ defmodule Day6 do
   """
   @spec process_part2(String.t()) :: integer()
   def process_part2(input) do
-    0
+    orbit_list =
+      input
+      |> String.split("\n")
+      |> Enum.filter(&(&1 != ""))
+      |> Enum.map(&parse_orbit/1)
+
+    orbit_pairs =
+      orbit_list
+      |> Enum.map(fn [orbiter: x, orbitee: y] -> {x, y} end)
+
+    orbit_map = make_orbit_map(orbit_list)
+
+    num_nodes =
+      Graph.add_edges(Graph.new(type: :undirected), orbit_pairs)
+      |> Graph.dijkstra(orbit_map["YOU"], orbit_map["SAN"])
+      |> Enum.count()
+
+    num_nodes - 1
   end
 end

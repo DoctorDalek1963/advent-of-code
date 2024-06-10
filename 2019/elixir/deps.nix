@@ -115,6 +115,19 @@
       beamDeps = [];
     };
 
+    libgraph = buildMix rec {
+      name = "libgraph";
+      version = "0.16.0";
+
+      src = fetchHex {
+        pkg = "libgraph";
+        version = "${version}";
+        sha256 = "41ca92240e8a4138c30a7e06466acc709b0cbb795c643e9e17174a178982d6bf";
+      };
+
+      beamDeps = [];
+    };
+
     makeup = buildMix rec {
       name = "makeup";
       version = "1.1.2";

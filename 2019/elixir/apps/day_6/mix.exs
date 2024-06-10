@@ -16,6 +16,9 @@ defmodule Day6.MixProject do
   end
 
   defp deps do
-    [{:util, in_umbrella: true}]
+    [
+      {:util, in_umbrella: true},
+      {:libgraph, "==0.16.0"}
+    ]
   end
 end
