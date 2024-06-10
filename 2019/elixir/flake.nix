@@ -16,7 +16,7 @@
         allUmbrellaBeamDeps = builtins.attrValues (import ./deps.nix {inherit (pkgs) lib beamPackages;});
       in rec {
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = [pkgs.elixir pkgs.mix2nix];
+          nativeBuildInputs = with pkgs; [elixir mix2nix livebook];
         };
 
         packages = {
