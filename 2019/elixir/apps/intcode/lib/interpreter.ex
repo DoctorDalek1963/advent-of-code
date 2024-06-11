@@ -1,8 +1,9 @@
 defmodule Intcode.Interpreter do
   @moduledoc """
-  Interpret the `Intcode` language built for AOC 2019.
+  Interpret the [`Intcode`](https://adventofcode.com/2019/day/2) language built
+  for [AOC 2019](https://adventofcode.com/2019).
 
-  `Intcode` is a system of bytecode, which operates on a list of integers. This
+  `Intcode` is a system of bytecode which operates on a list of integers. This
   interpreter is implemented in a way that makes use of message passing to
   interface with the user.
 
@@ -45,7 +46,28 @@ defmodule Intcode.Interpreter do
   `[xy02, $r1, $r2, $r3]` => `$r3 = $r1 * $r2`. `y` is the parameter mode of
   `$r1` and `x` is the parameter mode of `$r2`. `$r3` is always in position mode.
 
-  `[99]` => Halt immediately, returning the current state of the interpreter's memory.
+  `[03, $r1]` => Send `:awaiting_input`, expect to receive `{:input, value}`,
+  then store `value` in address `$r1`.
+
+  `[x04, $r1]` => Send `{:output, value}` to the user, where `value` is
+  determined by `$r1` and `x` is its parameter mode.
+
+  `[xy05, $r1, $r2]` => If `$r1` is non-zero, jump to the address specified by
+  `$r2.` `y` is the parameter mode of `$r1` and `x` is the parameter mode of `$r2`.
+
+  `[xy06, $r1, $r2]` => If `$r1` is zero, jump to the address specified by
+  `$r2.` `y` is the parameter mode of `$r1` and `x` is the parameter mode of `$r2`.
+
+  `[xy07, $r1, $r2, $r3]` => If `$r1 < $r2`, then store a 1 at the address
+  `$r3`. Otherwise, store a 0 there. `y` is the parameter mode of `$r1` and `x`
+  is the parameter mode of `$r2`.
+
+  `[xy08, $r1, $r2, $r3]` => If `$r1 == $r2`, then store a 1 at the address
+  `$r3`. Otherwise, store a 0 there. `y` is the parameter mode of `$r1` and `x`
+  is the parameter mode of `$r2`.
+
+  `[99]` => Halt immediately, sending the current state of the interpreter's
+  memory to the user as `{:halted, memory}`.
   """
 
   @typedoc """
