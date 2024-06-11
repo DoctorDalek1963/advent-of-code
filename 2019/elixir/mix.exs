@@ -7,7 +7,10 @@ defmodule Aoc2019.MixProject do
       name: "aoc_2019",
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      docs: [
+        formatters: ["html"]
+      ]
     ]
   end
 
