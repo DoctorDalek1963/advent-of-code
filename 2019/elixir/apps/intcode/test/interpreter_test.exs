@@ -180,6 +180,23 @@ defmodule IntcodeInterpreterTest do
     assert_receive {:halted, [3, 3, 1105, 13_906, 9, 1101, 0, 0, 12, 4, 12, 99, 1]}
   end
 
+  test "relative mode" do
+    quine = [109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99]
+    start_interpreter(quine, 0, true)
+    quine_output = consume_outputs() |> Enum.reverse()
+    assert quine === quine_output
+  end
+
+  test "large numbers" do
+    start_interpreter([1102, 34_915_192, 34_915_192, 7, 4, 7, 99, 0])
+    assert_receive {:output, 1_219_070_632_396_864}
+    assert_receive {:halted, [1102, 34_915_192, 34_915_192, 7, 4, 7, 99, 1_219_070_632_396_864]}
+
+    start_interpreter([104, 1_125_899_906_842_624, 99])
+    assert_receive {:output, 1_125_899_906_842_624}
+    assert_receive {:halted, [104, 1_125_899_906_842_624, 99]}
+  end
+
   test "combinations" do
     # Add and multiply
     assert interpret_no_io([1, 1, 1, 4, 99, 5, 6, 0, 99]) ===

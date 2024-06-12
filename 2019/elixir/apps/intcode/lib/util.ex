@@ -11,18 +11,27 @@ defmodule Intcode.Util do
   the interpreter with that bytecode. If given a list of integers, then just
   use that as the bytecode.
   """
-  def start_interpreter(bytecode, program_counter \\ 0)
+  def start_interpreter(bytecode, program_counter \\ 0, fill_mem \\ false)
 
-  @spec start_interpreter(String.t(), integer()) :: pid()
-  def start_interpreter(input, program_counter) when is_bitstring(input) do
+  @spec start_interpreter(String.t(), integer(), boolean()) :: pid()
+  def start_interpreter(input, program_counter, fill_mem)
+      when is_bitstring(input) and is_integer(program_counter) and is_boolean(fill_mem) do
     String.split(input, ",")
     |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
-    |> start_interpreter(program_counter)
+    |> start_interpreter(program_counter, fill_mem)
   end
 
-  @spec start_interpreter([integer()], integer()) :: pid()
-  def start_interpreter(bytecode, program_counter) when is_list(bytecode) do
-    spawn(Intcode.Interpreter, :interpret, [self(), bytecode, program_counter])
+  @spec start_interpreter([integer()], integer(), boolean()) :: pid()
+  def start_interpreter(bytecode, program_counter, fill_mem)
+      when is_list(bytecode) and is_integer(program_counter) and is_boolean(fill_mem) do
+    memory =
+      if fill_mem do
+        bytecode ++ List.duplicate(0, 10_000 - length(bytecode))
+      else
+        bytecode
+      end
+
+    spawn(Intcode.Interpreter, :interpret, [self(), memory, 0, program_counter])
   end
 
   @doc """
