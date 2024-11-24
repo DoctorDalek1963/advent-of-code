@@ -61,6 +61,7 @@ _get-input year lang day:
 
 	# Map from the language to the right path for input.txt
 	language_map = {
+		"d": "{{justfile_directory()}}/{{year}}/d/day-{{day}}/input.txt",
 		"elixir": "{{justfile_directory()}}/{{year}}/elixir/apps/day_{{day}}/input.txt",
 		"rust": "{{justfile_directory()}}/{{year}}/rust/day-{{day}}/input.txt",
 	}

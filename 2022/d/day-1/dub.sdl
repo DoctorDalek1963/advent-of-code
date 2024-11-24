@@ -1,0 +1,5 @@
+name "day-1"
+description "A Dlang solution to AOC 2022 day 1."
+authors "Dyson Dyson <dyson.dyson@icloud.com>"
+copyright "Copyright © 2024, Dyson Dyson"
+license "GPL-3.0"
