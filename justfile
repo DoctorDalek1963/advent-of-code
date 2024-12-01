@@ -37,10 +37,6 @@ check-changed *args:
 check-all:
 	fd --full-path -t d '20\d\d/[^/]+$' -x nix flake check path:{} --print-build-logs --keep-going
 
-# copy the scaffolding for the given day
-_copy-scaffolding year lang day:
-	@just _copy-scaffolding-{{lang}} {{year}} {{day}}
-
 _copy-scaffolding-elixir year day:
 	mkdir -p "{{year}}/elixir/apps/"
 	cp -r ./scaffolding/elixir "{{year}}/elixir/apps/day_{{day}}"
@@ -55,7 +51,7 @@ _copy-scaffolding-rust year day:
 	fd -e rs -e toml . "{{year}}/rust/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
 
 # get the input file for the given day
-_get-input year lang day:
+get-input year lang day:
 	#!/usr/bin/env python
 	from aocd import get_data
 
@@ -88,8 +84,8 @@ get-all-inputs:
 
 # setup the scaffolding and input file for the given day
 setup year lang day:
-	@just _copy-scaffolding {{year}} {{lang}} {{day}}
-	@just _get-input {{year}} {{lang}} {{day}}
+	@just _copy-scaffolding-{{year}} {{lang}} {{day}}
+	@just get-input {{year}} {{lang}} {{day}}
 
 # setup the scaffolding and input file for today
 today lang:
