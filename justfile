@@ -84,7 +84,7 @@ get-all-inputs:
 
 # setup the scaffolding and input file for the given day
 setup year lang day:
-	@just _copy-scaffolding-{{year}} {{lang}} {{day}}
+	@just _copy-scaffolding-{{lang}} {{year}} {{day}}
 	@just get-input {{year}} {{lang}} {{day}}
 
 # setup the scaffolding and input file for today
