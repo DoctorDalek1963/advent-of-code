@@ -77,7 +77,7 @@ get-all-inputs:
 		processed_days = [re.match(r"(20\d\d)/([^/]+)/(apps/)?day[-_](\d+)/", d.decode("utf-8")).groups() for d in days]
 
 		await asyncio.gather(
-			*[asyncio.create_subprocess_shell(f"just _get-input {year} {lang} {day}") for (year, lang, _, day) in processed_days]
+			*[asyncio.create_subprocess_shell(f"just get-input {year} {lang} {day}") for (year, lang, _, day) in processed_days]
 		)
 
 	asyncio.run(main())
