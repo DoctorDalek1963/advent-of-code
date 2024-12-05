@@ -11,7 +11,9 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@v7
 
       - name: Get all the inputs
-        run: AOC_SESSION='${{ secrets.AOC_SESSION }}' nix develop --command just get-all-inputs
+        run: |
+          AOC_SESSION='${{ secrets.AOC_SESSION }}' nix develop --command just get-all-inputs
+          sleep 60s
         shell: bash
 
       - name: Check the flakes
