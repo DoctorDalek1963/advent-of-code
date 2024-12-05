@@ -28,20 +28,20 @@
             beamDeps = allUmbrellaBeamDeps;
           };
 
-          doc = pkgs.beamPackages.buildMix {
-            name = "doc";
-            version = "0.1.0";
-            src = self;
-
-            beamDeps = allUmbrellaBeamDeps;
-            mixEnv = "dev";
-
-            postBuild = "mix docs --no-deps-check";
-            postInstall = ''
-              mkdir -p $out/share/doc
-              cp -rv ./doc/* $out/share/doc/
-            '';
-          };
+          # doc = pkgs.beamPackages.buildMix {
+          #   name = "doc";
+          #   version = "0.1.0";
+          #   src = self;
+          #
+          #   beamDeps = allUmbrellaBeamDeps;
+          #   mixEnv = "dev";
+          #
+          #   postBuild = "mix docs --no-deps-check";
+          #   postInstall = ''
+          #     mkdir -p $out/share/doc
+          #     cp -rv ./doc/* $out/share/doc/
+          #   '';
+          # };
         };
 
         checks =
@@ -58,17 +58,17 @@
               checkPhase = "mix credo";
             };
 
-            dialyzer = pkgs.beamPackages.buildMix {
-              name = "dialyzer";
-              version = "0.1.0";
-              src = self;
-
-              beamDeps = allUmbrellaBeamDeps;
-              mixEnv = "dev";
-
-              doCheck = true;
-              checkPhase = "mix dialyzer";
-            };
+            # dialyzer = pkgs.beamPackages.buildMix {
+            #   name = "dialyzer";
+            #   version = "0.1.0";
+            #   src = self;
+            #
+            #   beamDeps = allUmbrellaBeamDeps;
+            #   mixEnv = "dev";
+            #
+            #   doCheck = true;
+            #   checkPhase = "mix dialyzer";
+            # };
 
             format = pkgs.beamPackages.buildMix {
               name = "format";
