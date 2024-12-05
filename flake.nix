@@ -48,7 +48,14 @@
           check-vcs-permalinks.enable = true;
           check-yaml.enable = true;
           end-of-file-fixer.enable = true;
-          trim-trailing-whitespace.enable = true;
+
+          trim-trailing-whitespace = {
+            enable = true;
+            excludes = [
+              "2022/rust/day-5/src/bin.rs"
+              "2022/rust/day-5/src/parse.rs"
+            ];
+          };
 
           just-check-changed = {
             enable = true;
