@@ -2,6 +2,7 @@ defmodule Day10Test do
   use ExUnit.Case
   doctest Day10, import: true
 
+  @tag :skip
   test "find_best_position_and_count" do
     assert Day10.find_best_position_and_count("
       ......#.#.

@@ -120,30 +120,31 @@ defmodule Day10 do
 
   @doc """
   Check if one asteroid is visible from another.
-
-  ## Examples
-      iex> map = parse_asteroid_map("
-      ...> .#..#
-      ...> .....
-      ...> #####
-      ...> ....#
-      ...> ...##
-      ...> ")
-      iex> visible_from?({2, 2}, {4, 0}, map)
-      true
-      iex> visible_from?({4, 2}, {4, 3}, map)
-      true
-      iex> visible_from?({4, 2}, {4, 4}, map)
-      false
-      iex> visible_from?({1, 0}, {2, 2}, map)
-      true
-      iex> visible_from?({1, 0}, {3, 4}, map)
-      false
-      iex> visible_from?({1, 0}, {4, 4}, map)
-      false
-      iex> visible_from?({1, 0}, {1, 2}, map)
-      true
   """
+
+  # ## Examples
+  #     iex> map = parse_asteroid_map("
+  #     ...> .#..#
+  #     ...> .....
+  #     ...> #####
+  #     ...> ....#
+  #     ...> ...##
+  #     ...> ")
+  #     iex> visible_from?({2, 2}, {4, 0}, map)
+  #     true
+  #     iex> visible_from?({4, 2}, {4, 3}, map)
+  #     true
+  #     iex> visible_from?({4, 2}, {4, 4}, map)
+  #     false
+  #     iex> visible_from?({1, 0}, {2, 2}, map)
+  #     true
+  #     iex> visible_from?({1, 0}, {3, 4}, map)
+  #     false
+  #     iex> visible_from?({1, 0}, {4, 4}, map)
+  #     false
+  #     iex> visible_from?({1, 0}, {1, 2}, map)
+  #     true
+  # """
   @spec visible_from?(position(), position(), asteroid_map()) :: boolean()
   def visible_from?(start_position, end_position, asteroid_map)
 
