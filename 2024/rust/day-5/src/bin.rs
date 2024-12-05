@@ -13,9 +13,7 @@ pub fn process_part1(input: &str) -> usize {
     page_lists
         .into_iter()
         .filter_map(|list| {
-            let ordered = order_page_list(&rules, list.clone());
-
-            if list == ordered {
+            if is_page_list_ordered(&rules, &list) {
                 Some(list[list.len() / 2] as usize)
             } else {
                 None
@@ -30,9 +28,8 @@ pub fn process_part2(input: &str) -> usize {
     page_lists
         .into_iter()
         .filter_map(|list| {
-            let ordered = order_page_list(&rules, list.clone());
-
-            if list != ordered {
+            if !is_page_list_ordered(&rules, &list) {
+                let ordered = order_page_list(&rules, list.clone());
                 Some(ordered[ordered.len() / 2] as usize)
             } else {
                 None

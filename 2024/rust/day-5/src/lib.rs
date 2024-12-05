@@ -30,23 +30,31 @@ pub fn parse_input(input: &str) -> (Vec<PageOrderingRule>, Vec<Vec<u8>>) {
     (rules, page_lists)
 }
 
+#[inline]
+fn cmp_with_rules(rules: &[PageOrderingRule], a: u8, b: u8) -> Ordering {
+    if rules.contains(&PageOrderingRule(a, b)) {
+        Ordering::Less
+    } else if rules.contains(&PageOrderingRule(b, a)) {
+        Ordering::Greater
+    } else {
+        Ordering::Equal
+    }
+}
+
 /// Sort the page list into order according to the [`PageOrderingRule`]s.
 pub fn order_page_list(rules: &[PageOrderingRule], mut page_list: Vec<u8>) -> Vec<u8> {
-    page_list.sort_by(|&a, &b| {
-        if rules.contains(&PageOrderingRule(a, b)) {
-            Ordering::Less
-        } else if rules.contains(&PageOrderingRule(b, a)) {
-            Ordering::Greater
-        } else {
-            Ordering::Equal
-        }
-    });
+    page_list.sort_by(|&a, &b| cmp_with_rules(rules, a, b));
     page_list
 }
 
-#[cfg(test)]
-fn is_page_list_ordered(rules: &[PageOrderingRule], page_list: Vec<u8>) -> bool {
-    order_page_list(rules, page_list.clone()) == page_list
+/// Check if the given page list is sorted according to the [`PageOrderingRule`]s.
+pub fn is_page_list_ordered(rules: &[PageOrderingRule], page_list: &[u8]) -> bool {
+    page_list.is_sorted_by(|&a, &b| {
+        matches!(
+            cmp_with_rules(rules, a, b),
+            Ordering::Less | Ordering::Equal
+        )
+    })
 }
 
 #[cfg(test)]
@@ -129,11 +137,11 @@ mod tests {
     fn test_is_page_list_ordered() {
         let (rules, _) = parse_input(TEST_INPUT);
 
-        assert!(is_page_list_ordered(&rules, vec![75, 47, 61, 53, 29]));
-        assert!(is_page_list_ordered(&rules, vec![97, 61, 53, 29, 13]));
-        assert!(is_page_list_ordered(&rules, vec![75, 29, 13]));
-        assert!(!is_page_list_ordered(&rules, vec![75, 97, 47, 61, 53]));
-        assert!(!is_page_list_ordered(&rules, vec![61, 13, 29]));
-        assert!(!is_page_list_ordered(&rules, vec![97, 13, 75, 29, 47]));
+        assert!(is_page_list_ordered(&rules, &[75, 47, 61, 53, 29]));
+        assert!(is_page_list_ordered(&rules, &[97, 61, 53, 29, 13]));
+        assert!(is_page_list_ordered(&rules, &[75, 29, 13]));
+        assert!(!is_page_list_ordered(&rules, &[75, 97, 47, 61, 53]));
+        assert!(!is_page_list_ordered(&rules, &[61, 13, 29]));
+        assert!(!is_page_list_ordered(&rules, &[97, 13, 75, 29, 47]));
     }
 }
