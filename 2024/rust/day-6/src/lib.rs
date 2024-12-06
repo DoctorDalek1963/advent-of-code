@@ -118,6 +118,28 @@ pub fn parse_map(input: &str) -> ((usize, usize), Vec<Coord>, Guard) {
     ((x_bound, y_bound), obstacle_positions, guard)
 }
 
+/// Return a [`HashSet`] of all the coordinates that the guard visits in this map, assuming that
+/// the guard doesn't loop.
+///
+/// # Warnings
+///
+/// If the guard does fall into a loop, then this function will loop forever and never return.
+pub fn get_all_visited_coords_assuming_no_loop(
+    bounds: &(usize, usize),
+    obstacles: &[Coord],
+    mut guard: Guard,
+) -> HashSet<Coord> {
+    let mut visited_coords = HashSet::new();
+
+    visited_coords.insert(guard.position);
+    while let Some(new_guard) = guard.take_step(bounds, obstacles) {
+        guard = new_guard;
+        visited_coords.insert(guard.position);
+    }
+
+    visited_coords
+}
+
 /// Does the given map contain a loop for the guard?
 pub fn map_has_loop(bounds: &(usize, usize), obstacles: &[Coord], mut guard: Guard) -> bool {
     let mut visited = HashSet::new();
