@@ -2,6 +2,7 @@
 #![allow(unused_variables)]
 
 use crate::*;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 pub fn get_input() -> String {
     std::fs::read_to_string("./input.txt").unwrap()
@@ -9,7 +10,7 @@ pub fn get_input() -> String {
 
 pub fn process_part1(input: &str) -> i64 {
     parse_equations(input)
-        .into_iter()
+        .into_par_iter()
         .filter_map(|(target, nums)| {
             if ways_to_solve_simple(target, &nums) > 0 {
                 Some(target)
@@ -22,7 +23,7 @@ pub fn process_part1(input: &str) -> i64 {
 
 pub fn process_part2(input: &str) -> i64 {
     parse_equations(input)
-        .into_iter()
+        .into_par_iter()
         .filter_map(|(target, nums)| {
             if ways_to_solve_with_concat(target, &nums) > 0 {
                 Some(target)
@@ -46,7 +47,6 @@ mod tests {
     }
 
     #[test]
-    #[cfg_attr(debug_assertions, ignore = "part 2 is slow in debug builds")]
     fn process_part2_test() {
         assert_eq!(process_part2(TEST_INPUT), 11_387);
         assert_eq!(process_part2(&get_input()), 581_941_094_529_163);

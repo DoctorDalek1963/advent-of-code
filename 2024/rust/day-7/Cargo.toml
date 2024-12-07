@@ -9,6 +9,7 @@ path = "src/_bin/main.rs"
 
 [dependencies]
 dhat = { workspace = true, optional = true }
+rayon.workspace = true
 
 [dev-dependencies]
 pretty_assertions.workspace = true
