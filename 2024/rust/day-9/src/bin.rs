@@ -24,7 +24,6 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    #[cfg_attr(debug_assertions, ignore = "part 1 is very slow in debug builds")]
     fn process_part1_test() {
         assert_eq!(process_part1(TEST_INPUT), 1928);
         assert_eq!(process_part1(&get_input()), 6_435_922_584_968);

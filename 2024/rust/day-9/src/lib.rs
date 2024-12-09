@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::VecDeque;
 
 pub mod bin;
 
@@ -63,26 +63,30 @@ pub fn filesystem_to_id_list(filesystem: &[FsObject]) -> Vec<Option<u32>> {
 
 /// Compact the filesystem ID list by moving individual blocks into the first free space.
 pub fn compact_fs_id_list(mut id_list: Vec<Option<u32>>) -> Vec<Option<u32>> {
+    let mut file_idxs: Vec<usize> = id_list
+        .iter()
+        .enumerate()
+        .filter_map(|(idx, obj)| obj.is_some().then_some(idx))
+        .collect();
+
+    let mut empty_idxs: VecDeque<usize> = id_list
+        .iter()
+        .enumerate()
+        .filter_map(|(idx, obj)| obj.is_none().then_some(idx))
+        .collect();
+
     loop {
-        let (last_file_idx, _) = id_list
-            .iter()
-            .enumerate()
-            .filter(|&(_idx, obj)| obj.is_some())
-            .last()
-            .unwrap();
+        let last_file_idx = file_idxs.pop().unwrap();
+        let first_empty_idx = empty_idxs.pop_front().unwrap();
 
-        let (first_free_idx, _) = id_list
-            .iter()
-            .enumerate()
-            .find(|&(_idx, obj)| obj.is_none())
-            .unwrap();
-
-        if first_free_idx > last_file_idx {
+        if first_empty_idx > last_file_idx {
             break;
         }
 
-        id_list[first_free_idx] = id_list[last_file_idx];
+        id_list[first_empty_idx] = id_list[last_file_idx];
         id_list[last_file_idx] = None;
+
+        empty_idxs.push_back(last_file_idx);
     }
 
     id_list
