@@ -5,7 +5,7 @@ pub mod bin;
 /// An object in the amphipod's filesystem, either a file or a block of free space.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FsObject {
-    File { id: usize, size: usize },
+    File { id: u32, size: usize },
     FreeSpace(usize),
 }
 
@@ -40,7 +40,7 @@ pub fn parse_disk_map(input: &str) -> Vec<FsObject> {
     filesystem
 }
 
-pub fn filesystem_to_id_list(filesystem: &[FsObject]) -> Vec<Option<usize>> {
+pub fn filesystem_to_id_list(filesystem: &[FsObject]) -> Vec<Option<u32>> {
     let mut v = Vec::with_capacity(
         filesystem
             .iter()
@@ -62,7 +62,7 @@ pub fn filesystem_to_id_list(filesystem: &[FsObject]) -> Vec<Option<usize>> {
 }
 
 /// Compact the filesystem ID list by moving individual blocks into the first free space.
-pub fn compact_fs_id_list(mut id_list: Vec<Option<usize>>) -> Vec<Option<usize>> {
+pub fn compact_fs_id_list(mut id_list: Vec<Option<u32>>) -> Vec<Option<u32>> {
     loop {
         let (last_file_idx, _) = id_list
             .iter()
@@ -90,7 +90,7 @@ pub fn compact_fs_id_list(mut id_list: Vec<Option<usize>>) -> Vec<Option<usize>>
 
 /// Defrag the filesystem ID list by trying to move whole files into the first available free space
 /// block that will fit them.
-pub fn defrag_fs(filesystem: Vec<FsObject>) -> Vec<Option<usize>> {
+pub fn defrag_fs(filesystem: Vec<FsObject>) -> Vec<Option<u32>> {
     let max_id = filesystem
         .iter()
         .filter_map(|obj| match obj {
@@ -104,17 +104,14 @@ pub fn defrag_fs(filesystem: Vec<FsObject>) -> Vec<Option<usize>> {
     // We could create a similar map for free spaces but the sizes of free space chunks can change
     // when we move files, so that map would only be useful the first time we move a file.
     let id_start_idx_map = {
-        let mut start_idx_map = Vec::with_capacity(max_id + 1);
-
         // Initialize the vec with zeroes to allow for indexing directly into it
-        start_idx_map.extend(vec![0; max_id + 1]);
-
+        let mut start_idx_map = vec![0; max_id as usize + 1];
         let mut idx = 0;
 
         for obj in &filesystem {
             match &obj {
                 FsObject::File { id, size } => {
-                    start_idx_map[*id] = idx;
+                    start_idx_map[*id as usize] = idx;
                     idx += size;
                 }
                 FsObject::FreeSpace(size) => idx += size,
@@ -124,11 +121,12 @@ pub fn defrag_fs(filesystem: Vec<FsObject>) -> Vec<Option<usize>> {
         start_idx_map
     };
 
-    // Map from ID to the size of that file
-    let size_map: HashMap<usize, usize> = filesystem
+    // Map from ID to the size of that file. This implementation relies on the fact that IDs are
+    // allocated sequentially from 0
+    let size_map: Vec<usize> = filesystem
         .iter()
-        .filter_map(|obj| match obj {
-            FsObject::File { id, size } => Some((*id, *size)),
+        .filter_map(|&obj| match obj {
+            FsObject::File { size, .. } => Some(size),
             FsObject::FreeSpace(_) => None,
         })
         .collect();
@@ -137,8 +135,8 @@ pub fn defrag_fs(filesystem: Vec<FsObject>) -> Vec<Option<usize>> {
 
     let mut current_id = max_id;
     loop {
-        let start_idx = id_start_idx_map[current_id];
-        let size = *size_map.get(&current_id).unwrap();
+        let start_idx = id_start_idx_map[current_id as usize];
+        let size = size_map[current_id as usize];
 
         // Find the index of the first free space that will fit this file. If no large enough free
         // space exists, continue to the next file. Also do not consider free spaces after the
@@ -178,11 +176,11 @@ pub fn defrag_fs(filesystem: Vec<FsObject>) -> Vec<Option<usize>> {
 }
 
 /// Compute the checksum of the filesystem id_list.
-pub fn compute_checksum(id_list: &[Option<usize>]) -> usize {
+pub fn compute_checksum(id_list: &[Option<u32>]) -> usize {
     id_list
         .iter()
         .enumerate()
-        .map(|(idx, id)| idx * id.unwrap_or(0))
+        .map(|(idx, id)| idx * id.unwrap_or(0) as usize)
         .sum()
 }
 
