@@ -11,12 +11,18 @@
       perSystem = {system, ...}: let
         pkgs = inputs.nixpkgs.legacyPackages.${system};
       in {
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
+        devShells = let
+          inputs = with pkgs; [
             gradle
             kotlin
             just
           ];
+        in {
+          default = pkgs.mkShell {buildInputs = inputs;};
+
+          ide = pkgs.mkShell {
+            buildInputs = inputs ++ [pkgs.jetbrains.idea-community];
+          };
         };
 
         checks = {};

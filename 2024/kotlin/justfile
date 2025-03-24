@@ -8,3 +8,7 @@ _default:
 # run `gradle test` from the root of the Kotlin project
 test:
 	gradle test
+
+# launch IntelliJ IDEA
+intellij:
+	nix develop .#ide --command idea-community
