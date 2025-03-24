@@ -15,6 +15,7 @@
           buildInputs = with pkgs; [
             gradle
             kotlin
+            just
           ];
         };
 
