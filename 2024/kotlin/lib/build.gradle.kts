@@ -1,4 +1,6 @@
 plugins {
+    application
+
     alias(libs.plugins.kotlin.jvm)
 
     // API and implementation separation
@@ -19,6 +21,12 @@ dependencies {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    if (hasProperty("launch")) {
+        mainClass.set("com.github.doctordalek1963.aoc2024.${property("launch")}")
     }
 }
 

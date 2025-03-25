@@ -9,6 +9,10 @@ _default:
 test:
 	gradle test
 
+# run the desired day
+run day:
+	gradle run -Plaunch=Day{{day}}
+
 # launch IntelliJ IDEA
 intellij:
 	nix develop .#ide --command idea-community
