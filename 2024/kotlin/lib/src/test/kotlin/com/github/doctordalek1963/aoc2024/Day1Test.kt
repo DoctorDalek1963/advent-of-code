@@ -14,7 +14,7 @@ object Day1Test {
 
     @Test
     fun testPart2() {
-        assertEquals(31, Day1(TEST_INPUT).processPart2(),)
+        assertEquals(31, Day1(TEST_INPUT).processPart2())
         assertEquals(25_358_365, Day1(realInput).processPart2())
     }
 }

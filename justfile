@@ -37,18 +37,28 @@ check-changed *args:
 check-all:
 	fd --full-path -t d '20\d\d/[^/]+$' -x nix flake check path:{} --print-build-logs --keep-going
 
+# copy the Elixir scaffolding for the given day
 _copy-scaffolding-elixir year day:
-	mkdir -p "{{year}}/elixir/apps/"
-	cp -r ./scaffolding/elixir "{{year}}/elixir/apps/day_{{day}}"
-	fd -e ex -e exs . "{{year}}/elixir/apps/day_{{day}}/" -X sd -s "DAYNUM" "{{day}}"
-	sd -s "YEARNUM" "{{year}}" "{{year}}/elixir/apps/day_{{day}}/lib/dayDAYNUM.ex"
-	fd . "{{year}}/elixir/apps/day_{{day}}" -x rename "DAYNUM" "{{day}}" {} || true
+	mkdir -p "{{source_directory()}}/{{year}}/elixir/apps/"
+	cp -r {{source_directory()}}/scaffolding/elixir "{{source_directory()}}/{{year}}/elixir/apps/day_{{day}}"
+	fd -e ex -e exs . "{{source_directory()}}/{{year}}/elixir/apps/day_{{day}}/" -X sd -s "DAYNUM" "{{day}}"
+	sd -s "YEARNUM" "{{year}}" "{{source_directory()}}/{{year}}/elixir/apps/day_{{day}}/lib/dayDAYNUM.ex"
+	fd . "{{source_directory()}}/{{year}}/elixir/apps/day_{{day}}" -x rename "DAYNUM" "{{day}}" {} || true
+
+# copy the Kotlin scaffolding for the given day
+_copy-scaffolding-kotlin year day:
+	cp {{source_directory()}}/scaffolding/kotlin/Day.kt "{{source_directory()}}/{{year}}/kotlin/lib/src/main/kotlin/com/github/doctordalek1963/aoc{{year}}/Day{{day}}.kt"
+	cp {{source_directory()}}/scaffolding/kotlin/Test.kt "{{source_directory()}}/{{year}}/kotlin/lib/src/test/kotlin/com/github/doctordalek1963/aoc{{year}}/Day{{day}}Test.kt"
+	sd -s "DAYNUM" "{{day}}" "{{source_directory()}}/{{year}}/kotlin/lib/src/main/kotlin/com/github/doctordalek1963/aoc{{year}}/Day{{day}}.kt" \
+		"{{source_directory()}}/{{year}}/kotlin/lib/src/test/kotlin/com/github/doctordalek1963/aoc{{year}}/Day{{day}}Test.kt"
+	sd -s "YEARNUM" "{{year}}" "{{source_directory()}}/{{year}}/kotlin/lib/src/main/kotlin/com/github/doctordalek1963/aoc{{year}}/Day{{day}}.kt" \
+		"{{source_directory()}}/{{year}}/kotlin/lib/src/test/kotlin/com/github/doctordalek1963/aoc{{year}}/Day{{day}}Test.kt"
 
 # copy the Rust scaffolding for the given day
 _copy-scaffolding-rust year day:
-	mkdir -p "{{year}}/rust/day-{{day}}"
-	cp -r ./scaffolding/rust/* "{{year}}/rust/day-{{day}}"
-	fd -e rs -e toml . "{{year}}/rust/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
+	mkdir -p "{{source_directory()}}/{{year}}/rust/day-{{day}}"
+	cp -r {{source_directory()}}/scaffolding/rust/* "{{source_directory()}}/{{year}}/rust/day-{{day}}"
+	fd -e rs -e toml . "{{source_directory()}}/{{year}}/rust/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
 
 # get the input file for the given day
 get-input year lang day:
@@ -57,9 +67,10 @@ get-input year lang day:
 
 	# Map from the language to the right path for input.txt
 	language_map = {
-		"d": "{{justfile_directory()}}/{{year}}/d/day-{{day}}/input.txt",
-		"elixir": "{{justfile_directory()}}/{{year}}/elixir/apps/day_{{day}}/input.txt",
-		"rust": "{{justfile_directory()}}/{{year}}/rust/day-{{day}}/input.txt",
+		"d": "{{source_directory()}}/{{year}}/d/day-{{day}}/input.txt",
+		"elixir": "{{source_directory()}}/{{year}}/elixir/apps/day_{{day}}/input.txt",
+		"kotlin": "{{source_directory()}}/{{year}}/kotlin/lib/inputs/day{{day}}.txt",
+		"rust": "{{source_directory()}}/{{year}}/rust/day-{{day}}/input.txt",
 	}
 
 	with open(language_map["{{lang}}"], "w") as f:

@@ -61,7 +61,7 @@ class Day1(private val input: String) : AocDay() {
         fun main(args: Array<String>) {
             println("For test input:")
             Day1(TEST_INPUT).printParts()
-            println("For real input:")
+            println("\nFor real input:")
             Day1(realInput).printParts()
         }
     }
