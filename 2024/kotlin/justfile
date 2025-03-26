@@ -1,0 +1,22 @@
+import "../../justfile"
+
+set allow-duplicate-recipes
+
+_default:
+	@just --list
+
+# run `gradle test` from the root of the Kotlin project
+test:
+	gradle test
+
+# run the desired day
+run day:
+	gradle run -Plaunch=Day{{day}}
+
+# launch IntelliJ IDEA
+intellij:
+	nix develop .#ide --command idea-community
+
+# format all Kotlin files with ktlint
+fmt:
+	ktlint -F "**/*.kt" "**/*.kts"
