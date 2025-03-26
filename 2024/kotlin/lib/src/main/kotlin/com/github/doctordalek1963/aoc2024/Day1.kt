@@ -3,16 +3,15 @@ package com.github.doctordalek1963.aoc2024
 import java.util.regex.Pattern
 import kotlin.math.absoluteValue
 
-class Day1(private val input: String) : AocDay() {
+class Day1(
+    private val input: String,
+) : AocDay() {
     private fun parseLists(): Pair<ArrayList<Int>, ArrayList<Int>> {
         val list1 = arrayListOf<Int>()
         val list2 = arrayListOf<Int>()
 
         for (line in input.lineSequence()) {
-            val nums = line
-                .split(Pattern.compile(" +"))
-                .filter { it != "" }
-                .map { it.toInt() }
+            val nums = line.split(Pattern.compile(" +")).filter { it != "" }.map { it.toInt() }
 
             if (nums.isNotEmpty()) {
                 list1.add(nums[0])
@@ -48,7 +47,8 @@ class Day1(private val input: String) : AocDay() {
     }
 
     companion object {
-        const val TEST_INPUT = """3   4
+        const val TEST_INPUT =
+            """3   4
 4   3
 2   5
 1   3

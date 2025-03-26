@@ -16,3 +16,7 @@ run day:
 # launch IntelliJ IDEA
 intellij:
 	nix develop .#ide --command idea-community
+
+# format all Kotlin files with ktlint
+fmt:
+	ktlint -F "**/*.kt" "**/*.kts"

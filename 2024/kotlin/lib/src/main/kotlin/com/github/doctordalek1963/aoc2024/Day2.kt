@@ -2,37 +2,28 @@ package com.github.doctordalek1963.aoc2024
 
 import kotlin.math.absoluteValue
 
-class Day2(private val input: String) : AocDay() {
-    override fun processPart1(): Int {
-        return input
+class Day2(
+    private val input: String,
+) : AocDay() {
+    override fun processPart1(): Int =
+        input
             .lineSequence()
-            .map {
-                Report(
-                    it.split(" ")
-                        .filter { it != "" }
-                        .map { it.toInt() }
-                ).isSafe()
-            }
+            .map { Report(it.split(" ").filter { it != "" }.map { it.toInt() }).isSafe() }
             .filter { it }
             .count()
-    }
 
-    override fun processPart2(): Int {
-        return input
+    override fun processPart2(): Int =
+        input
             .lineSequence()
             .map {
-                Report(
-                    it.split(" ")
-                        .filter { it != "" }
-                        .map { it.toInt() }
-                ).isSafeWithProblemDampener()
-            }
-            .filter { it }
+                Report(it.split(" ").filter { it != "" }.map { it.toInt() })
+                    .isSafeWithProblemDampener()
+            }.filter { it }
             .count()
-    }
 
     companion object {
-        const val TEST_INPUT = """7 6 4 2 1
+        const val TEST_INPUT =
+            """7 6 4 2 1
 1 2 7 8 9
 9 7 6 2 1
 1 3 2 4 5
@@ -52,23 +43,28 @@ class Day2(private val input: String) : AocDay() {
 }
 
 private enum class Direction {
-    INCREASING, DECREASING;
+    INCREASING,
+    DECREASING,
+    ;
 
     companion object {
-        fun from(a: Int, b: Int): Direction? {
-            return when {
+        fun from(
+            a: Int,
+            b: Int,
+        ): Direction? =
+            when {
                 a < b -> INCREASING
                 a > b -> DECREASING
                 else -> null
             }
-        }
     }
 }
 
-class Report(private val levels: List<Int>) {
+class Report(
+    private val levels: List<Int>,
+) {
     fun isSafe(): Boolean {
-        if (levels.size < 2)
-            return false
+        if (levels.size < 2) return false
 
         var direction: Direction? = null
         var prev: Int? = null
@@ -90,13 +86,11 @@ class Report(private val levels: List<Int>) {
                     }
                 } else {
                     // We're not just starting, so check direction
-                    if (direction != Direction.from(prev, i))
-                        return false
+                    if (direction != Direction.from(prev, i)) return false
                 }
 
                 // We need small diffs
-                if ((i - prev).absoluteValue !in 1..3)
-                    return false
+                if ((i - prev).absoluteValue !in 1..3) return false
 
                 prev = i
             }
@@ -110,8 +104,7 @@ class Report(private val levels: List<Int>) {
             val newLevels = ArrayList(levels)
             newLevels.removeAt(i)
 
-            if (Report(newLevels).isSafe())
-                return true
+            if (Report(newLevels).isSafe()) return true
         }
 
         return false

@@ -33,7 +33,7 @@ application {
 tasks.named<Test>("test") {
     useJUnitPlatform()
     this.testLogging {
-        outputs.upToDateWhen {false}
+        outputs.upToDateWhen { false }
         this.showStandardStreams = true
     }
 }

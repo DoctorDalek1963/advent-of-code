@@ -16,6 +16,7 @@
             gradle
             kotlin
             just
+            ktlint
           ];
         in {
           default = pkgs.mkShell {buildInputs = inputs;};

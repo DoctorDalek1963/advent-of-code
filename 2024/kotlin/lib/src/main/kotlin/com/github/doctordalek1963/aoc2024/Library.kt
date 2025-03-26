@@ -4,6 +4,7 @@ import java.io.File
 
 abstract class AocDay {
     abstract fun processPart1(): Int
+
     abstract fun processPart2(): Int
 
     fun printParts() {
@@ -14,7 +15,4 @@ abstract class AocDay {
     }
 }
 
-fun getInput(day: Int): String =
-    File("inputs/day${day}.txt")
-        .bufferedReader()
-        .use { it.readText() }
+fun getInput(day: Int): String = File("inputs/day$day.txt").bufferedReader().use { it.readText() }
