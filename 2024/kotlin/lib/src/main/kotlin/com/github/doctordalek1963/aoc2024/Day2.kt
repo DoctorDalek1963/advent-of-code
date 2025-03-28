@@ -60,7 +60,7 @@ private enum class Direction {
     }
 }
 
-class Report(
+private class Report(
     private val levels: List<Int>,
 ) {
     fun isSafe(): Boolean {
