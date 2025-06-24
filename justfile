@@ -60,6 +60,12 @@ _copy-scaffolding-rust year day:
 	cp -r {{source_directory()}}/scaffolding/rust/* "{{source_directory()}}/{{year}}/rust/day-{{day}}"
 	fd -e rs -e toml . "{{source_directory()}}/{{year}}/rust/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
 
+# copy the Zig scaffolding for the given day
+_copy-scaffolding-zig year day:
+	mkdir -p "{{source_directory()}}/{{year}}/zig/day-{{day}}"
+	cp -r {{source_directory()}}/scaffolding/zig/* "{{source_directory()}}/{{year}}/zig/day-{{day}}"
+	fd -e zig -e zon . "{{source_directory()}}/{{year}}/zig/day-{{day}}/" -X sd -s "DAYNUM" "{{day}}"
+
 # get the input file for the given day
 get-input year lang day:
 	#!/usr/bin/env python
@@ -71,6 +77,7 @@ get-input year lang day:
 		"elixir": "{{source_directory()}}/{{year}}/elixir/apps/day_{{day}}/input.txt",
 		"kotlin": "{{source_directory()}}/{{year}}/kotlin/lib/inputs/day{{day}}.txt",
 		"rust": "{{source_directory()}}/{{year}}/rust/day-{{day}}/input.txt",
+		"zig": "{{source_directory()}}/{{year}}/zig/day-{{day}}/src/input.txt",
 	}
 
 	with open(language_map["{{lang}}"], "w") as f:
