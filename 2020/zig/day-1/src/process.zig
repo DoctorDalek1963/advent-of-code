@@ -1,5 +1,5 @@
 const std = @import("std");
-const lib = @import("lib.zig");
+const lib = @import("aoc_lib");
 
 pub const real_input: []const u8 = @embedFile("input.txt");
 
