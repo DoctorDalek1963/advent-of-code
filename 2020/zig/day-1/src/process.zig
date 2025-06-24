@@ -1,5 +1,5 @@
 const std = @import("std");
-const lib = @import("aoc_lib");
+const aoc_lib = @import("aoc_lib");
 
 pub const real_input: []const u8 = @embedFile("input.txt");
 
@@ -14,7 +14,7 @@ pub const test_input: []const u8 =
 
 /// Find the two numbers in the list that sum to 2020 and multiply them.
 pub fn process_part1(allocator: std.mem.Allocator, input: []const u8) !usize {
-    const nums = try lib.read_lines_as_ints(u32, allocator, input);
+    const nums = try aoc_lib.read_lines_as_ints(u32, allocator, input);
     defer nums.deinit();
 
     const num_count = nums.items.len;
@@ -35,7 +35,7 @@ pub fn process_part1(allocator: std.mem.Allocator, input: []const u8) !usize {
 
 /// Find the three numbers in the list that sum to 2020 and multiply them.
 pub fn process_part2(allocator: std.mem.Allocator, input: []const u8) !usize {
-    const nums = try lib.read_lines_as_ints(u32, allocator, input);
+    const nums = try aoc_lib.read_lines_as_ints(u32, allocator, input);
     defer nums.deinit();
 
     const num_count = nums.items.len;
