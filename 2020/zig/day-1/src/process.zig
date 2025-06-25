@@ -57,12 +57,12 @@ pub fn process_part2(allocator: std.mem.Allocator, input: []const u8) !usize {
     return error.NumbersNotFound;
 }
 
-test "process part1 test" {
+test "process_part1" {
     try std.testing.expectEqual(514_579, process_part1(std.testing.allocator, test_input));
     try std.testing.expectEqual(928_896, process_part1(std.testing.allocator, real_input));
 }
 
-test "process part2 test" {
+test "process_part2" {
     try std.testing.expectEqual(241_861_950, process_part2(std.testing.allocator, test_input));
     try std.testing.expectEqual(295_668_576, process_part2(std.testing.allocator, real_input));
 }
