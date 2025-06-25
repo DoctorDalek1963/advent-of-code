@@ -3,19 +3,18 @@ set dotenv-load := true
 _default:
     @just --list
 
-# format all the Rust files
-fmt:
-    fd -e rs -x rustfmt
-
-# run this day with dhat-heap to profile memory usage
+# (rust only) run this day with dhat-heap to profile memory usage
+[group("profile")]
 dhat-heap:
     cd {{ invocation_directory() }} && cargo run --release --features dhat-heap
 
 # open the dhat viewer to view dhat-heap.json files properly
+[group("profile")]
 open-dhat-viewer:
     xdg-open dhat/dh_view.html
 
 # check and test only the years whose files are passed in, used for pre-commit
+[group("check")]
 check-changed *args:
     #!/usr/bin/env python
     import re
@@ -34,10 +33,12 @@ check-changed *args:
             exit(exit_code)
 
 # check every flake
+[group("check")]
 check-all:
     fd --full-path -t d '20\d\d/[^/]+$' -x nix flake check path:{} --print-build-logs --keep-going
 
 # copy the Elixir scaffolding for the given day
+[group("setup")]
 _copy-scaffolding-elixir year day:
     mkdir -p "{{ source_directory() }}/{{ year }}/elixir/apps/"
     cp -r {{ source_directory() }}/scaffolding/elixir "{{ source_directory() }}/{{ year }}/elixir/apps/day_{{ day }}"
@@ -46,6 +47,7 @@ _copy-scaffolding-elixir year day:
     fd . "{{ source_directory() }}/{{ year }}/elixir/apps/day_{{ day }}" -x rename "DAYNUM" "{{ day }}" {} || true
 
 # copy the Kotlin scaffolding for the given day
+[group("setup")]
 _copy-scaffolding-kotlin year day:
     cp {{ source_directory() }}/scaffolding/kotlin/Day.kt "{{ source_directory() }}/{{ year }}/kotlin/lib/src/main/kotlin/com/github/doctordalek1963/aoc{{ year }}/Day{{ day }}.kt"
     cp {{ source_directory() }}/scaffolding/kotlin/Test.kt "{{ source_directory() }}/{{ year }}/kotlin/lib/src/test/kotlin/com/github/doctordalek1963/aoc{{ year }}/Day{{ day }}Test.kt"
@@ -55,18 +57,21 @@ _copy-scaffolding-kotlin year day:
         "{{ source_directory() }}/{{ year }}/kotlin/lib/src/test/kotlin/com/github/doctordalek1963/aoc{{ year }}/Day{{ day }}Test.kt"
 
 # copy the Rust scaffolding for the given day
+[group("setup")]
 _copy-scaffolding-rust year day:
     mkdir -p "{{ source_directory() }}/{{ year }}/rust/day-{{ day }}"
     cp -r {{ source_directory() }}/scaffolding/rust/* "{{ source_directory() }}/{{ year }}/rust/day-{{ day }}"
     fd -e rs -e toml . "{{ source_directory() }}/{{ year }}/rust/day-{{ day }}/" -X sd -s "DAYNUM" "{{ day }}"
 
 # copy the Zig scaffolding for the given day
+[group("setup")]
 _copy-scaffolding-zig year day:
     mkdir -p "{{ source_directory() }}/{{ year }}/zig/day-{{ day }}"
     cp -r {{ source_directory() }}/scaffolding/zig/* "{{ source_directory() }}/{{ year }}/zig/day-{{ day }}"
     fd -e zig -e zon . "{{ source_directory() }}/{{ year }}/zig/day-{{ day }}/" -X sd -s "DAYNUM" "{{ day }}"
 
 # get the input file for the given day
+[group("setup")]
 get-input year lang day:
     #!/usr/bin/env python
     from aocd import get_data
@@ -84,6 +89,7 @@ get-input year lang day:
         f.write(get_data(day={{ day }}, year={{ year }}) + '\n')
 
 # get the input files for every day
+[group("setup")]
 get-all-inputs:
     #!/usr/bin/env python
     import asyncio
@@ -101,10 +107,12 @@ get-all-inputs:
     asyncio.run(main())
 
 # setup the scaffolding and input file for the given day
+[group("setup")]
 setup year lang day:
     @just _copy-scaffolding-{{ lang }} {{ year }} {{ day }}
     @just get-input {{ year }} {{ lang }} {{ day }}
 
 # setup the scaffolding and input file for today
+[group("setup")]
 today lang:
     just setup "$(date +'%Y')" "{{ lang }}" "$(date +'%d' | sed 's/^0//')"
