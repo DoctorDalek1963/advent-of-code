@@ -58,11 +58,11 @@ pub fn process_part2(allocator: std.mem.Allocator, input: []const u8) !usize {
 }
 
 test "process part1 test" {
-    try std.testing.expectEqual(process_part1(std.testing.allocator, test_input), 514_579);
-    try std.testing.expectEqual(process_part1(std.testing.allocator, real_input), 928_896);
+    try std.testing.expectEqual(514_579, process_part1(std.testing.allocator, test_input));
+    try std.testing.expectEqual(928_896, process_part1(std.testing.allocator, real_input));
 }
 
 test "process part2 test" {
-    try std.testing.expectEqual(process_part2(std.testing.allocator, test_input), 241_861_950);
-    try std.testing.expectEqual(process_part2(std.testing.allocator, real_input), 295_668_576);
+    try std.testing.expectEqual(241_861_950, process_part2(std.testing.allocator, test_input));
+    try std.testing.expectEqual(295_668_576, process_part2(std.testing.allocator, real_input));
 }
