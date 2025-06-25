@@ -19,17 +19,59 @@ pub fn split_lines(allocator: std.mem.Allocator, buf: []const u8) !std.ArrayList
 
 /// Read the lines in `buf` as the integer type `T`.
 pub fn read_lines_as_ints(comptime T: type, allocator: std.mem.Allocator, buf: []const u8) !std.ArrayList(T) {
+    const parse = struct {
+        fn f(line: []const u8) std.fmt.ParseIntError!T {
+            return std.fmt.parseInt(T, line, 10);
+        }
+    }.f;
+
+    return try read_lines_as_something_with_errors(T, parse, allocator, buf);
+}
+
+/// Read the lines if `buf` and apply `func` to each, then return an ArrayList of the return type of `func`.
+// zig fmt: off
+pub fn read_lines_as_something(
+    comptime T: type,
+    comptime func: fn (line: []const u8) T,
+    allocator: std.mem.Allocator,
+    buf: []const u8
+) !std.ArrayList(T) {
+    // zig fmt: on
     const line_count = std.mem.count(u8, buf, "\n");
 
-    var nums = try std.ArrayList(T).initCapacity(allocator, line_count);
+    var things = try std.ArrayList(T).initCapacity(allocator, line_count);
 
     var lines = std.mem.splitScalar(u8, buf, '\n');
     while (lines.next()) |line| {
         if (line.len == 0) break;
-        try nums.append(try std.fmt.parseInt(T, line, 10));
+        try things.append(func(line));
     }
 
-    std.debug.assert(nums.items.len == line_count);
+    std.debug.assert(things.items.len == line_count);
 
-    return nums;
+    return things;
+}
+
+/// Same as `read_lines_as_something`, but `func` can error, which we propagate.
+// zig fmt: off
+pub fn read_lines_as_something_with_errors(
+    comptime T: type,
+    comptime func: fn (line: []const u8) anyerror!T,
+    allocator: std.mem.Allocator,
+    buf: []const u8
+) !std.ArrayList(T) {
+// zig fmt: on
+    const line_count = std.mem.count(u8, buf, "\n");
+
+    var things = try std.ArrayList(T).initCapacity(allocator, line_count);
+
+    var lines = std.mem.splitScalar(u8, buf, '\n');
+    while (lines.next()) |line| {
+        if (line.len == 0) break;
+        try things.append(try func(line));
+    }
+
+    std.debug.assert(things.items.len == line_count);
+
+    return things;
 }
