@@ -8,24 +8,24 @@ pub const test_input: []const u8 =
     \\
 ;
 
-pub fn process_part1(allocator: std.mem.Allocator, input: []const u8) !usize {
+pub fn processPart1(allocator: std.mem.Allocator, input: []const u8) !usize {
     _ = allocator;
     _ = input;
     return 0;
 }
 
-pub fn process_part2(allocator: std.mem.Allocator, input: []const u8) !usize {
+pub fn processPart2(allocator: std.mem.Allocator, input: []const u8) !usize {
     _ = allocator;
     _ = input;
     return 0;
 }
 
-test "process_part1 test" {
-    try std.testing.expectEqual(1, process_part1(std.testing.allocator, test_input));
-    try std.testing.expectEqual(1, process_part1(std.testing.allocator, real_input));
+test "processPart1 test" {
+    try std.testing.expectEqual(1, processPart1(std.testing.allocator, test_input));
+    try std.testing.expectEqual(1, processPart1(std.testing.allocator, real_input));
 }
 
-test "process_part2 test" {
-    try std.testing.expectEqual(1, process_part2(std.testing.allocator, test_input));
-    try std.testing.expectEqual(1, process_part2(std.testing.allocator, real_input));
+test "processPart2 test" {
+    try std.testing.expectEqual(1, processPart2(std.testing.allocator, test_input));
+    try std.testing.expectEqual(1, processPart2(std.testing.allocator, real_input));
 }

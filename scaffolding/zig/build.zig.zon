@@ -2,7 +2,7 @@
     .name = .day_DAYNUM,
     .version = "0.0.0",
     // .fingerprint = 0x0000000000000000,
-    .minimum_zig_version = "0.14.0",
+    .minimum_zig_version = "0.15.0",
 
     .dependencies = .{},
 
