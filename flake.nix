@@ -11,63 +11,73 @@
     };
   };
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         inputs.pre-commit-hooks.flakeModule
       ];
 
-      systems = ["x86_64-linux" "aarch64-linux"];
-      perSystem = {
-        config,
-        system,
-        ...
-      }: let
-        pkgs = inputs.nixpkgs.legacyPackages.${system};
-      in {
-        devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [
-            just
-            fd
-            sd
-            util-linux
-            (python3.withPackages (p: [p.aocd]))
-          ];
-          shellHook = ''
-            ${config.pre-commit.installationScript}
-          '';
-        };
-
-        # See https://flake.parts/options/pre-commit-hooks-nix and
-        # https://github.com/cachix/git-hooks.nix/blob/master/modules/hooks.nix
-        # for all the available hooks and options
-        pre-commit.settings.hooks = {
-          check-added-large-files.enable = true;
-          check-merge-conflicts.enable = true;
-          check-toml.enable = true;
-          check-vcs-permalinks.enable = true;
-          check-yaml.enable = true;
-          end-of-file-fixer.enable = true;
-
-          trim-trailing-whitespace = {
-            enable = true;
-            excludes = [
-              "2022/rust/day-5/src/bin.rs"
-              "2022/rust/day-5/src/parse.rs"
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      perSystem =
+        {
+          config,
+          system,
+          ...
+        }:
+        let
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
+        in
+        {
+          devShells.default = pkgs.mkShell {
+            nativeBuildInputs = with pkgs; [
+              just
+              fd
+              sd
+              util-linux
+              (python3.withPackages (p: [ p.aocd ]))
             ];
+            shellHook = ''
+              ${config.pre-commit.installationScript}
+            '';
           };
 
-          just-check-changed = {
-            enable = true;
-            name = "just-check-changed";
-            description = "Check the things that have changed";
-            files = "\\.(rs|toml|lock)$";
-            entry = "${pkgs.just}/bin/just check-changed";
-            stages = ["pre-push"];
-          };
+          # See https://flake.parts/options/pre-commit-hooks-nix and
+          # https://github.com/cachix/git-hooks.nix/blob/master/modules/hooks.nix
+          # for all the available hooks and options
+          pre-commit.settings.hooks = {
+            check-added-large-files.enable = true;
+            check-merge-conflicts.enable = true;
+            check-toml.enable = true;
+            check-vcs-permalinks.enable = true;
+            check-yaml.enable = true;
+            end-of-file-fixer.enable = true;
 
-          alejandra.enable = true;
+            trim-trailing-whitespace = {
+              enable = true;
+              excludes = [
+                "2022/rust/day-5/src/bin.rs"
+                "2022/rust/day-5/src/parse.rs"
+              ];
+            };
+
+            just-check-changed = {
+              enable = true;
+              name = "just-check-changed";
+              description = "Check the things that have changed";
+              files = "\\.(rs|toml|lock)$";
+              entry = "${pkgs.just}/bin/just check-changed";
+              stages = [ "pre-push" ];
+            };
+
+            nixfmt-rfc-style = {
+              enable = true;
+              package = pkgs.nixfmt-rfc-style;
+            };
+          };
         };
-      };
     };
 }
