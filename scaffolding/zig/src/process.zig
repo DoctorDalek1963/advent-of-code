@@ -1,5 +1,5 @@
 const std = @import("std");
-const aoc_lib = @import("aoc_lib");
+// const aoc_lib = @import("aoc_lib");
 
 pub const real_input: []const u8 = @embedFile("input.txt");
 
