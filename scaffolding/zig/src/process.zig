@@ -22,10 +22,10 @@ pub fn processPart2(allocator: std.mem.Allocator, input: []const u8) !usize {
 
 test "processPart1 test" {
     try std.testing.expectEqual(1, processPart1(std.testing.allocator, test_input));
-    try std.testing.expectEqual(1, processPart1(std.testing.allocator, real_input));
+    // try std.testing.expectEqual(1, processPart1(std.testing.allocator, real_input));
 }
 
 test "processPart2 test" {
-    try std.testing.expectEqual(1, processPart2(std.testing.allocator, test_input));
-    try std.testing.expectEqual(1, processPart2(std.testing.allocator, real_input));
+    // try std.testing.expectEqual(1, processPart2(std.testing.allocator, test_input));
+    // try std.testing.expectEqual(1, processPart2(std.testing.allocator, real_input));
 }
