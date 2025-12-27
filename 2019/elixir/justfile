@@ -1,0 +1,9 @@
+import "../../justfile"
+
+set allow-duplicate-recipes := true
+
+_default:
+    @just --list
+
+check:
+    mix test

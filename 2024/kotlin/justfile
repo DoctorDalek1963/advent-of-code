@@ -6,7 +6,7 @@ _default:
 	@just --list
 
 # run `gradle test` from the root of the Kotlin project
-test:
+check:
 	gradle test
 
 # run the desired day

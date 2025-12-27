@@ -1,0 +1,11 @@
+import "../../justfile"
+
+set allow-duplicate-recipes := true
+
+_default:
+    @just --list
+
+[no-cd]
+check:
+    zig build test
+    zig build test -Doptimize=ReleaseFast

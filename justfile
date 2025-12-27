@@ -17,6 +17,7 @@ open-dhat-viewer:
 [group("check")]
 check-changed *args:
     #!/usr/bin/env python
+    import os
     import re
     import subprocess
 
@@ -28,14 +29,23 @@ check-changed *args:
             paths.add(path.group(0))
 
     for path in paths:
-        exit_code = subprocess.run(["nix", "flake", "check", f"path:{path}", "--print-build-logs", "--keep-going"]).returncode
-        if exit_code != 0:
+        child = subprocess.run(
+            ["direnv allow && direnv exec . just check"],
+            cwd=path,
+            shell=True,
+            env=(os.environ | {"_nix_direnv_force_reload": "1"}),
+        )
+
+        if (exit_code := child.returncode) != 0:
             exit(exit_code)
 
 # check every flake
 [group("check")]
 check-all:
-    fd --full-path -t d '20\d\d/[^/]+$' -x nix flake check path:{} --print-build-logs --keep-going
+    fd -t d day -x direnv allow {}
+    cd {{ source_directory() }}/2019/elixir && _nix_direnv_force_reload=1 direnv exec . mix local.hex --force
+    cd {{ source_directory() }}/2019/elixir && _nix_direnv_force_reload=1 direnv exec . mix deps.get
+    _nix_direnv_force_reload=1 fd -t d day -x bash -c 'cd {} && direnv exec . just check'
 
 # copy the Elixir scaffolding for the given day
 [group("setup")]
