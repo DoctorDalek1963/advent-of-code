@@ -61,6 +61,7 @@
               excludes = [
                 "2022/rust/day-5/src/bin.rs"
                 "2022/rust/day-5/src/parse.rs"
+                "2025/zig/day-6/src/process.zig"
               ];
             };
 
