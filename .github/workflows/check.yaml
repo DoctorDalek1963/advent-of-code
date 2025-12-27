@@ -5,10 +5,23 @@ on: push
 jobs:
   check-flakes:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - uses: nixbuild/nix-quick-install-action@v27
-      - uses: DeterminateSystems/magic-nix-cache-action@v7
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Create TMPDIR
+        run: |
+          mkdir -p /home/runner/work/tmp
+          echo "TMPDIR=/home/runner/work/tmp" >> $GITHUB_ENV
+
+      - name: Install nix-direnv
+        run: |
+          mkdir -p "${XDG_CONFIG_HOME}/direnv/lib"
+          cp "$(nix-build --expr "(import <nixpkgs> {}).nix-direnv")"/share/nix-direnv/direnvrc "${XDG_CONFIG_HOME}/direnv/lib/nix-direnv.sh"
 
       - name: Get all the inputs
         run: |
@@ -18,3 +31,4 @@ jobs:
 
       - name: Check the flakes
         run: nix develop --command just check-all
+        shell: bash
