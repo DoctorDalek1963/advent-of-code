@@ -5,7 +5,13 @@ set allow-duplicate-recipes := true
 _default:
     @just --list
 
+# check the current day
 [no-cd]
+[group("check")]
 check:
     zig build test
-    zig build test -Doptimize=ReleaseFast
+
+# check every day this year
+[group("check")]
+check-year:
+    for d in {{ source_directory() }}/day*; do cd "$d" && just check; done

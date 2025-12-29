@@ -39,13 +39,20 @@ check-changed *args:
         if (exit_code := child.returncode) != 0:
             exit(exit_code)
 
-# check every flake
+# check every day
 [group("check")]
 check-all:
-    fd -t d day -x direnv allow {}
-    cd {{ source_directory() }}/2019/elixir && _nix_direnv_force_reload=1 direnv exec . mix local.hex --force
-    cd {{ source_directory() }}/2019/elixir && _nix_direnv_force_reload=1 direnv exec . mix deps.get
-    _nix_direnv_force_reload=1 fd -t d day -x bash -c 'cd {} && direnv exec . just check'
+    #!/usr/bin/env bash
+    rc=0
+    _nix_direnv_force_reload=1
+
+    for d in {{ source_directory() }}/20??/*; do
+        direnv allow "$d"
+        cd "$d"
+        direnv exec . just check-year
+        [ $? -ne 0 ] && rc=1
+    done
+    exit $rc
 
 # copy the Elixir scaffolding for the given day
 [group("setup")]

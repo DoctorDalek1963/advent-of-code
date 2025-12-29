@@ -5,18 +5,22 @@ set allow-duplicate-recipes
 _default:
 	@just --list
 
-# run `gradle test` from the root of the Kotlin project
-check:
+# check every day this year
+[group("check")]
+check-year:
 	gradle test
 
 # run the desired day
+[group("run")]
 run day:
 	gradle run -Plaunch=Day{{day}}
 
 # launch IntelliJ IDEA
+[group("run")]
 intellij:
 	nix develop .#ide --command idea-community
 
 # format all Kotlin files with ktlint
+[group("format")]
 fmt:
 	ktlint -F "**/*.kt" "**/*.kts"

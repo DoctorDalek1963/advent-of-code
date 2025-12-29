@@ -5,5 +5,15 @@ set allow-duplicate-recipes := true
 _default:
     @just --list
 
+# check the current day
+[no-cd]
+[group("check")]
 check:
+    mix test
+
+# check every day this year
+[group("check")]
+check-year:
+    mix local.hex --force
+    mix deps.get
     mix test
